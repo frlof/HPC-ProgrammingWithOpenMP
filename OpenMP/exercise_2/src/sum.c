@@ -4,7 +4,7 @@ void omp_sum(double *sum_ret)
 {
     omp_set_num_threads(32);
     int sum = 0;
-    int iterations = sizeof(sum_ret) / sizeof(double);
+    int iterations = sizeof(sum_ret) / sizeof(sum_ret[0]);
     #pragma omp parallel
     {
         #pragma omp for
