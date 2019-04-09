@@ -8,7 +8,7 @@ void omp_sum(double *sum_ret)
     #pragma omp parallel
     {
         #pragma omp for
-        for(int i = 0; i < length(sum_ret); i++){
+        for(int i = 0; i < iterations; i++){
             sum += sum_ret[i];
         }
     }
