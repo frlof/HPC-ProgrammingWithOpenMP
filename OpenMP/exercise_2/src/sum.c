@@ -2,6 +2,15 @@
 
 void omp_sum(double *sum_ret)
 {
+    omp_set_num_threads(32);
+    int sum = 0;
+    #pragma omp parallel
+    {
+        #pragma omp for
+        for(int i = 0; i < length(sum_ret); i++){
+            sum += sum_ret[i];
+        }
+    }
 
 }
 
