@@ -12,7 +12,6 @@ void omp_sum(double *sum_ret)
             sum += sum_ret[i];
         }
     }
-
 }
 
 void omp_critical_sum(double *sum_ret)
