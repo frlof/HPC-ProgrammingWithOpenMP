@@ -93,5 +93,13 @@ void omp_private_sum(double *sum_ret)
 
 void omp_reduction_sum(double *sum_ret)
 {
-
+    int sum = 0;
+    int iterations = sizeof(sum_ret) / sizeof(sum_ret[0]);
+    #pragma omp parallel
+    {
+        #pragma omp for reduction(+:sum)
+        for(int i = 0; i < iterations; i++){
+            sum += sum_ret[i];
+        }
+    }
 }
