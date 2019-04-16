@@ -76,7 +76,19 @@ void omp_padded_sum(double *sum_ret)
 
 void omp_private_sum(double *sum_ret)
 {
-
+    omp_set_num_threads(32);
+    int sum = 0;
+    int iterations = sizeof(sum_ret) / sizeof(sum_ret[0]);
+    #pragma omp parallel
+    {
+        int sumPriv = 0;
+        #pragma omp for
+        for(int i = 0; i < iterations; i++){
+            sumPriv += sum_ret[i];
+        }
+        #pragma omp critical
+        sum += sumPriv;
+    }
 }
 
 void omp_reduction_sum(double *sum_ret)
