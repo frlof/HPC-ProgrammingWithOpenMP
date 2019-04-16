@@ -51,7 +51,7 @@ void omp_local_sum(double *sum_ret)
     int iterations = sizeof(sum_ret) / sizeof(sum_ret[0]);
     #pragma omp parallel
     {
-        int id = omp_get_thread_num;
+        int id = omp_get_thread_num();
         #pragma omp for
         for(int i = 0; i < iterations; i++){
             sum[id] += sum_ret[i];
@@ -66,7 +66,7 @@ void omp_padded_sum(double *sum_ret)
     int iterations = sizeof(sum_ret) / sizeof(sum_ret[0]);
     #pragma omp parallel
     {
-        int id = omp_get_thread_num;
+        int id = omp_get_thread_num();
         #pragma omp for
         for(int i = 0; i < iterations; i++){
             sum[id][0] += sum_ret[i];
