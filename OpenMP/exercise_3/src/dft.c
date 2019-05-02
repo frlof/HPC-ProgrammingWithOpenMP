@@ -2,7 +2,7 @@
 
 // DFT/IDFT routine
 // idft: 1 direct DFT, -1 inverse IDFT (Inverse DFT)
-int aDFT(int idft, double* xr, double* xi, double* Xr_o, double* Xi_o, int N)
+int DFT(int idft, double* xr, double* xi, double* Xr_o, double* Xi_o, int N)
 {
 	#pragma omp parallel
 	{
@@ -26,7 +26,7 @@ int aDFT(int idft, double* xr, double* xi, double* Xr_o, double* Xi_o, int N)
 	return 1;
 }
 
-int DFT(int idft, double* xr, double* xi, double* Xr_o, double* Xi_o, int N)
+int aDFT(int idft, double* xr, double* xi, double* Xr_o, double* Xi_o, int N)
 {
 	for (int k = 0 ; k < N; k++) {
 		for (int n = 0; n < N; n++) {
