@@ -1,6 +1,6 @@
 #include "nbody.h"
 
-void nbody(struct Body *bodies, int steps, int output_steps, int N, double G, double DT, double EPS)
+void anbody(struct Body *bodies, int steps, int output_steps, int N, double G, double DT, double EPS)
 {
 	FILE *checkpoint = NULL;
 	char buffer[1024];
@@ -84,7 +84,7 @@ void nbody(struct Body *bodies, int steps, int output_steps, int N, double G, do
 	printf("particle 0: X=%f, Y=%f, Z=%f\n", X,Y,Z);
 }
 
-void anbody(struct Body *bodies, int steps, int output_steps, int N, double G, double DT, double EPS)
+void nbody(struct Body *bodies, int steps, int output_steps, int N, double G, double DT, double EPS)
 {
 	FILE *checkpoint = NULL;
 	char buffer[1024];
