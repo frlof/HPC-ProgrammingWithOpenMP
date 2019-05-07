@@ -30,8 +30,8 @@ void compute_pi(int flip, int *local_count, double *answer)
 	MPI_Comm_size(MPI_COMM_WORLD, &num_ranks);
 
 	double radius = 1.0;
-
-	for(int i = 0; i < flip / (double)num_ranks; i++){
+	int i;
+	for(i = 0; i < flip / (double)num_ranks; i++){
 		double newCoordX = (double)rand();
 		double newCoordY = (double)rand();
 
@@ -45,7 +45,7 @@ void compute_pi(int flip, int *local_count, double *answer)
 	if (world_rank == 0) {
 		int count = *local_count;
 		int temp;
-		for(int i = 1; i < num_ranks; i++){
+		for(i = 1; i < num_ranks; i++){
 			
     		MPI_Recv(&temp, 1, MPI_INT, i, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 			count += temp;
