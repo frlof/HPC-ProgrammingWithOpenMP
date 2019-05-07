@@ -28,6 +28,8 @@ void cleanup_pi()
 
 void compute_pi(int flip, int *local_count, double *answer)
 {
+
+	srand();
 	int world_rank;
 	int num_ranks;
 	MPI_Comm_rank(MPI_COMM_WORLD, &world_rank);
