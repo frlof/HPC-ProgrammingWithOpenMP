@@ -1,6 +1,10 @@
 #include "pi.h"
 #include <math.h>
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
 void init_pi(int set_seed, char *outfile)
 {
 	if (filename != NULL) {
@@ -32,8 +36,8 @@ void compute_pi(int flip, int *local_count, double *answer)
 	double radius = 1.0;
 	int i;
 	for(i = 0; i < flip / (double)num_ranks; i++){
-		double newCoordX = (double)rand();
-		double newCoordY = (double)rand();
+		double newCoordX = (double)rand()/RAND_MAX;
+		double newCoordY = (double)rand()/RAND_MAX;
 
 		double distance = sqrt(newCoordX*newCoordX+newCoordY*newCoordY);
 
