@@ -28,23 +28,23 @@ void cleanup_pi()
 
 void compute_pi(int flip, int *local_count, double *answer)
 {
-
-	srand();
 	int world_rank;
 	int num_ranks;
 	MPI_Comm_rank(MPI_COMM_WORLD, &world_rank);
 	MPI_Comm_size(MPI_COMM_WORLD, &num_ranks);
-
+	srand(world_rank);
 	double radius = 1.0;
 	int i;
 	for(i = 0; i < (int)((double)flip / (double)num_ranks); i++){
 		double newCoordX = (double)rand()/RAND_MAX;
 		double newCoordY = (double)rand()/RAND_MAX;
-
+		//printf("%f\n", newCoordX);
 		double distance = sqrt(newCoordX*newCoordX+newCoordY*newCoordY);
-
+		
 		if(distance <= radius){
-			*local_count++;
+			//printf("%d   ", *local_count);
+			(*local_count)++;
+			//printf("%d\n", *local_count);
 		}
 	}
 
