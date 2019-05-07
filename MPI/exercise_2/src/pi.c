@@ -35,7 +35,7 @@ void compute_pi(int flip, int *local_count, double *answer)
 
 	double radius = 1.0;
 	int i;
-	for(i = 0; i < flip / (double)num_ranks; i++){
+	for(i = 0; i < (int)((double)flip / (double)num_ranks); i++){
 		double newCoordX = (double)rand()/RAND_MAX;
 		double newCoordY = (double)rand()/RAND_MAX;
 
@@ -45,13 +45,15 @@ void compute_pi(int flip, int *local_count, double *answer)
 			*local_count++;
 		}
 	}
+
+
 	
 	if (world_rank == 0) {
 		int count = *local_count;
 		int temp;
 		for(i = 1; i < num_ranks; i++){
 			
-    		MPI_Recv(&temp, 1, MPI_INT, i, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+    		MPI_Recv(&temp, 1, MPI_INT, i, i, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 			count += temp;
 		}
 		
@@ -59,10 +61,8 @@ void compute_pi(int flip, int *local_count, double *answer)
 		double pi = 4 * P;
 
 		*answer = pi;
-
-		printf("pi: %f\n", pi);
 	}else{
-		MPI_Send(local_count, 1, MPI_INT, 0, 0, MPI_COMM_WORLD);
+		MPI_Send(local_count, 1, MPI_INT, 0, world_rank, MPI_COMM_WORLD);
 	}
 	
 }
