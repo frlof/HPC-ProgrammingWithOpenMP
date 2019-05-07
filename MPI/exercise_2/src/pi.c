@@ -51,12 +51,17 @@ void compute_pi(int flip, int *local_count, double *answer)
 
 	
 	if (world_rank == 0) {
-		int count = *local_count;
-		int temp;
+		int count = 0;
+		int temp[num_ranks];
+		temp[0] = *local_count;
 		for(i = 1; i < num_ranks; i++){
 			
-    		MPI_Recv(&temp, 1, MPI_INT, i, i, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-			count += temp;
+    		MPI_Irecv(&(temp[i]), 1, MPI_INT, i, i, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+		}
+		MPI_Waitall();
+
+		for(i = 0; i < num_ranks; i++){
+			count += temp[i];
 		}
 		
 		double P = (double)count / (double)flip;
