@@ -29,7 +29,6 @@ void compute_pi(int flip, int *local_count, double *answer)
 	MPI_Comm_rank(MPI_COMM_WORLD, &world_rank);
 	MPI_Comm_size(MPI_COMM_WORLD, &num_ranks);
 
-	double size = 1.0;
 	double radius = 1.0;
 
 	for(int i = 0; i < flip / (double)num_ranks; i++){
@@ -42,10 +41,6 @@ void compute_pi(int flip, int *local_count, double *answer)
 			*local_count++;
 		}
 	}
-
-	
-
-	int world_rank;
 	
 	if (world_rank == 0) {
 		int count = *local_count;
@@ -56,7 +51,7 @@ void compute_pi(int flip, int *local_count, double *answer)
 			count += temp;
 		}
 		
-		double P = success / total;
+		double P = (double)count / (double)flip;
 		double pi = 4 * P;
 
 		*answer = pi;
