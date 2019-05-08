@@ -53,12 +53,13 @@ void compute_pi(int flip, int *local_count, double *answer)
 
 		for(i = 1; i < num_ranks; i++){
 			//
-    		MPI_Irecv(&(temp[i]), 1, MPI_INT, i, i, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-			//MPI_Irecv(&(temp[i]), 1, MPI_INT, i, i, MPI_COMM_WORLD, &(request[i-1]));
-			MPI_Wait(request[i-1], MPI_STATUS_IGNORE);
+    			//MPI_Irecv(&(temp[i]), 1, MPI_INT, i, i, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+			MPI_Irecv(&(temp[i]), 1, MPI_INT, i, i, MPI_COMM_WORLD, &(request[i-1]));
+			//MPI_Wait(&(request[i-1]), MPI_STATUS_IGNORE);
 		}
-		MPI_Waitall(num_ranks-1, request, status);
-
+		//MPI_Waitall(num_ranks-1, request, status);
+		MPI_Waitall(num_ranks-1, request, MPI_STATUS_IGNORE);
+		
 		for(i = 0; i < num_ranks; i++){
 			count += temp[i];
 		}
@@ -68,9 +69,9 @@ void compute_pi(int flip, int *local_count, double *answer)
 
 		*answer = pi;
 	}else{
-		//MPI_Send(local_count, 1, MPI_INT, 0, world_rank, MPI_COMM_WORLD);
+		MPI_Send(local_count, 1, MPI_INT, 0, world_rank, MPI_COMM_WORLD);
 		//&data, count, datatype, dest, tag, comm, request
-		MPI_Isend(local_count, 1, MPI_INT, 0, world_rank, MPI_COMM_WORLD, &(request[world_rank-1]));
+		//MPI_Send(local_count, 1, MPI_INT, 0, world_rank, MPI_COMM_WORLD, &(request[world_rank-1]));
 	}
 	
 }
