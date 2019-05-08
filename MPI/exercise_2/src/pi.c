@@ -47,14 +47,16 @@ void compute_pi(int flip, int *local_count, double *answer)
 			//printf("%d\n", *local_count);
 		}
 	}
+
+	MPI_Request request[num_ranks-1];
+	MPI_Status status[num_ranks-1];
 	
 	if (world_rank == 0) {
 		int count = 0;
 		int temp[num_ranks];
 		temp[0] = *local_count;
 
-		MPI_Request request[num_ranks-1];
-		MPI_Status status[num_ranks-1];
+
 
 		for(i = 1; i < num_ranks; i++){
 			
@@ -72,7 +74,9 @@ void compute_pi(int flip, int *local_count, double *answer)
 
 		*answer = pi;
 	}else{
-		MPI_Send(local_count, 1, MPI_INT, 0, world_rank, MPI_COMM_WORLD);
+		//MPI_Send(local_count, 1, MPI_INT, 0, world_rank, MPI_COMM_WORLD);
+		//&data, count, MPI_INT, source, tag, MPI_COMM_WORLD, &request[1]
+		MPI_Send(local_count, 1, MPI_INT, 0, world_rank, MPI_COMM_WORLD, &(request[world_rank]));
 	}
 	
 }
