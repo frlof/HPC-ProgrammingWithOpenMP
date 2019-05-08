@@ -53,9 +53,9 @@ void compute_pi(int flip, int *local_count, double *answer)
 
 		for(i = 1; i < num_ranks; i++){
 			//
-    		//MPI_Irecv(&(temp[i]), 1, MPI_INT, i, i, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-			MPI_Irecv(&(temp[i]), 1, MPI_INT, i, i, MPI_COMM_WORLD, &(request[i-1]));
-			//MPI_Wait();
+    		MPI_Irecv(&(temp[i]), 1, MPI_INT, i, i, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+			//MPI_Irecv(&(temp[i]), 1, MPI_INT, i, i, MPI_COMM_WORLD, &(request[i-1]));
+			MPI_Wait(request[i-1], MPI_STATUS_IGNORE);
 		}
 		MPI_Waitall(num_ranks-1, request, status);
 
