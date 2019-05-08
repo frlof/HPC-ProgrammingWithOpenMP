@@ -9,6 +9,9 @@
 char *filename;
 int seed;
 
+MPI_Request request[64];
+MPI_Status status[64];
+
 void init_pi(int, char*);
 void cleanup_pi();
 void compute_pi(int, int*, double*);
