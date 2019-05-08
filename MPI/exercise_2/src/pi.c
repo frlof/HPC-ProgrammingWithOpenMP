@@ -47,18 +47,21 @@ void compute_pi(int flip, int *local_count, double *answer)
 			//printf("%d\n", *local_count);
 		}
 	}
-
-
 	
 	if (world_rank == 0) {
 		int count = 0;
 		int temp[num_ranks];
 		temp[0] = *local_count;
+
+		MPI_Request request[num_ranks-1];
+		MPI_Status status[num_ranks-1];
+
 		for(i = 1; i < num_ranks; i++){
 			
-    		MPI_Irecv(&(temp[i]), 1, MPI_INT, i, i, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+    		//MPI_Irecv(&(temp[i]), 1, MPI_INT, i, i, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+			MPI_Irecv(&(temp[i]), 1, MPI_INT, i, i, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 		}
-		MPI_Waitall();
+		MPI_Waitall(num_ranks-1, request, status);
 
 		for(i = 0; i < num_ranks; i++){
 			count += temp[i];
