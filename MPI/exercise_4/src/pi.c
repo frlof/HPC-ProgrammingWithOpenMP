@@ -46,10 +46,6 @@ void compute_pi(int flip, int *local_count, double *answer)
 
 
 	if (world_rank == 0) {
-		int count = 0;
-		for(i = 0; i < num_ranks; i++){
-			count += temps[i];
-		}
 		
 		double P = (double)count / (double)flip;
 		double pi = 4 * P;
