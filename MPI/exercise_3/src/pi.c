@@ -43,10 +43,10 @@ void compute_pi(int flip, int *local_count, double *answer)
 
 	int temps[num_ranks];
 	if(world_rank == 0){
-		MPI_Gather(local_count, 1, MPI_INT, &temps, num_ranks, MPI_INT, 0, MPI_COMM_WORLD);
+		MPI_Gather(local_count, 1, MPI_INT, &temps, 1, MPI_INT, 0, MPI_COMM_WORLD);
 	}
 	else{
-		MPI_Gather(local_count, 1, MPI_INT, NULL, num_ranks, MPI_INT, 0, MPI_COMM_WORLD);
+		MPI_Gather(local_count, 1, MPI_INT, NULL, 1, MPI_INT, 0, MPI_COMM_WORLD);
 	}
 
 
