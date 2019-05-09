@@ -41,15 +41,15 @@ void compute_pi(int flip, int *local_count, double *answer)
 	//MPI_Request request[num_ranks-1];
 	//MPI_Status status[num_ranks-1];
 
-	double *temps = NULL;
+	int *temps = NULL;
 	if(world_rank == 0){
-		temps = malloc(sizeof(double) * num_ranks);
+		temps = malloc(sizeof(int) * num_ranks);
 	}
 
 	MPI_Gather(local_count, 1, MPI_INT, temps, num_ranks, MPI_INT, 0, MPI_COMM_WORLD);
 
 	if (world_rank == 0) {
-		double count = 0;
+		int count = 0;
 		for(i = 0; i < num_ranks; i++){
 			count += temps[i];
 		}
