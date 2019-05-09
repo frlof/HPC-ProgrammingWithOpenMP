@@ -41,7 +41,7 @@ void compute_pi(int flip, int *local_count, double *answer)
 	//MPI_Request request[num_ranks-1];
 	//MPI_Status status[num_ranks-1];
 
-	int *temps = NULL;
+	double *temps = NULL;
 	if(world_rank == 0){
 		temps = malloc(sizeof(double) * num_ranks);
 	}
