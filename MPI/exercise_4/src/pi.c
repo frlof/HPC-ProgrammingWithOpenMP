@@ -42,7 +42,7 @@ void compute_pi(int flip, int *local_count, double *answer)
 	//MPI_Status status[num_ranks-1];
 
 	int count;
-	MPI_Reduce(local_count, &count, 1, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD)
+	MPI_Reduce(local_count, &count, 1, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD);
 
 
 	if (world_rank == 0) {
