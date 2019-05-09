@@ -71,7 +71,9 @@ void compute_pi(int flip, int *local_count, double *answer)
 	}else{
 		MPI_Send(local_count, 1, MPI_INT, 0, world_rank, MPI_COMM_WORLD);
 		//&data, count, datatype, dest, tag, comm, request
-		//MPI_Send(local_count, 1, MPI_INT, 0, world_rank, MPI_COMM_WORLD, &(request[world_rank-1]));
+		//MPI_Request pelle;
+		//MPI_Isend(local_count, 1, MPI_INT, 0, world_rank, MPI_COMM_WORLD, &pelle);
+		//MPI_Wait(&pelle, MPI_STATUS_IGNORE);
 	}
 	
 }
