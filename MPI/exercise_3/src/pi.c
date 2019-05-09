@@ -54,7 +54,6 @@ void compute_pi(int flip, int *local_count, double *answer)
 		int count = 0;
 		for(i = 0; i < num_ranks; i++){
 			count += temps[i];
-			printf("%d\n", count);
 		}
 		
 		double P = (double)count / (double)flip;
