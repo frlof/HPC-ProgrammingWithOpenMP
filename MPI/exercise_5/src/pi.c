@@ -47,9 +47,11 @@ void compute_pi(int flip, int *local_count, double *answer)
 
 		*answer = pi;
 		MPI_File fh;
-		int *i = 3;
+		int *buf;
+		 buf = (int *)malloc( size * sizeof(int) );
+    	buf[0] = world_rank;
 		MPI_File_open(MPI_COMM_SELF, "results.txt", MPI_MODE_CREATE | MPI_MODE_WRONLY, MPI_INFO_NULL, &fh);
-		MPI_File_write_all(fh, &i, 1, MPI_INT, MPI_STATUS_IGNORE);
+		MPI_File_write_all(fh, buf, 1, MPI_INT, MPI_STATUS_IGNORE);
 		MPI_File_close(&fh);
 	}
 	/*MPI_File fh;
