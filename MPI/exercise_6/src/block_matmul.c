@@ -38,7 +38,7 @@ void init_matmul(char *A_file, char *B_file, char *outfile)
 {
 	/* Copy output file name to configuration */
 	config.outfile = outfile;
-
+	MPI_Comm_rank(MPI_COMM_WORLD, &world_rank);
 	/* Get matrix size header */
 	if(world_rank == 0){
 		MPI_File fh;
@@ -93,8 +93,8 @@ void compute_fox()
 {
 
 	/* Compute source and target for verticle shift of B blocks */
-
-	for (int i = 0; i < config.dim[0]; i++) {
+	int i;
+	for (i = 0; i < config.dim[0]; i++) {
 		/* Diag + i broadcast block A horizontally and use A_tmp to preserve own local A */
 
 		/* dgemm with blocks */
