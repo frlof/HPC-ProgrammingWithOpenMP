@@ -46,9 +46,13 @@ void compute_pi(int flip, int *local_count, double *answer)
 		double pi = 4 * P;
 
 		*answer = pi;
+
+		MPI_File_open(MPI_COMM_SELF, "results.txt", MPI_MODE_CREATE | MPI_MODE_WRONLY, MPI_INFO_NULL, &fh);
+		MPI_File_write(fh, &local_count, MPI_INT, MPI_STATUS_IGNORE);
+		MPI_File_close(&fh);
 	}
 	MPI_File fh;
-	MPI_File_open(MPI_COMM_SELF, "results.txt", MPI_MODE_CREATE | MPI_MODE_WRONLY, MPI_INFO_NULL, &fh);
-	MPI_File_write_at(fh, &local_count, sizeof(local_count) * world_rank, 1, MPI_INT, MPI_STATUS_IGNORE);
-	MPI_File_close(&fh);
+	//MPI_File_open(MPI_COMM_SELF, "results.txt", MPI_MODE_CREATE | MPI_MODE_WRONLY, MPI_INFO_NULL, &fh);
+	//MPI_File_write_at(fh, &local_count, sizeof(local_count) * world_rank, 1, MPI_INT, MPI_STATUS_IGNORE);
+	//MPI_File_close(&fh);
 }
