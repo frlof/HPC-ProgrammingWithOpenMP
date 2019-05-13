@@ -41,6 +41,7 @@ void init_matmul(char *A_file, char *B_file, char *outfile)
 	int world_rank;
 	MPI_Comm_rank(MPI_COMM_WORLD, &world_rank);
 	/* Get matrix size header */
+	printf("%d", world_rank);
 	if(world_rank == 0){
 		MPI_File fh;
 		MPI_Offset offset;
