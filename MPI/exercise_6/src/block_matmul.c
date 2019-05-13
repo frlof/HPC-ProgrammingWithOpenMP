@@ -38,6 +38,7 @@ void init_matmul(char *A_file, char *B_file, char *outfile)
 {
 	/* Copy output file name to configuration */
 	config.outfile = outfile;
+	int world_rank;
 	MPI_Comm_rank(MPI_COMM_WORLD, &world_rank);
 	/* Get matrix size header */
 	if(world_rank == 0){
