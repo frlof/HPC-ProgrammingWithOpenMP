@@ -18,10 +18,10 @@ int main(int argc, char *argv[])
 
 	double avg_runtime = 0.0, prev_avg_runtime = 0.0, stddev_runtime = 0.0;
 	double start_time, end_time;
-
+	
 	MPI_Init(&argc, &argv);
 	MPI_Comm_rank(MPI_COMM_WORLD, &world_rank);
-
+	printf("%d", world_rank);
 	while ((opt = getopt(argc, argv, "cfr:")) != -1) {
 		switch (opt) {
 			case 'f':
