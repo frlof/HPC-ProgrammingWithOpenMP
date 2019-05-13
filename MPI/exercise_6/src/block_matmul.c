@@ -95,13 +95,13 @@ void compute_fox()
 {
 
 	/* Compute source and target for verticle shift of B blocks */
-	int i;
-	for (i = 0; i < config.dim[0]; i++) {
+//	int i;
+//	for (i = 0; i < config.dim[0]; i++) {
 		/* Diag + i broadcast block A horizontally and use A_tmp to preserve own local A */
 
 		/* dgemm with blocks */
 		
 		/* Shfting block B upwards and receive from process below */
 
-	}
+//	}
 }
