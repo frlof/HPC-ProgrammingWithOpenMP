@@ -44,7 +44,7 @@ void init_matmul(char *A_file, char *B_file, char *outfile)
 		MPI_File fh;
 		MPI_Offset offset;
 
-		MPI_File_open(MPI_COMM_SELF, A_file, MPI_MODE_RONLY, MPI_INFO_NULL, &fh);
+		MPI_File_open(MPI_COMM_SELF, A_file, MPI_MODE_RDONLY, MPI_INFO_NULL, &fh);
 		MPI_File_read_at(fh, 0, config.A_dims, 2, MPI_INT, MPI_STATUS_IGNORE);
 		MPI_File_close(&fh);
 		printf("%d", config.A_dims[0]);
