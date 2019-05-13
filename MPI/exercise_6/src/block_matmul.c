@@ -1,5 +1,6 @@
 #include "block_matmul.h"
 
+
 struct Config {
 	/* MPI Files */
 	MPI_File A_file, B_file, C_file;
@@ -31,44 +32,45 @@ struct Config {
 	int local_dims[2];
 	int local_size;
 };
-
 struct Config config;
+
 
 void init_matmul(char *A_file, char *B_file, char *outfile)
 {
+	MPI_Comm_rank(MPI_COMM_WORLD, &config.world_rank);
+	MPI_Comm_size(MPI_COMM_WORLD, &config.world_size);
+
 	/* Copy output file name to configuration */
-	//config.outfile = outfile;
-	int world_rank;
-	MPI_Comm_rank(MPI_COMM_WORLD, &world_rank);
+	config.outfile = outfile;
+	
 	/* Get matrix size header */
-	if(world_rank == 0){
-		MPI_File fh;
-		MPI_Offset offset;
-		
+	if(world_rank == 0){	
 		//Matrix A
-		MPI_File_open(MPI_COMM_SELF, A_file, MPI_MODE_RDONLY, MPI_INFO_NULL, &fh);
-		MPI_File_read_at(fh, 0, config.A_dims, 2, MPI_INT, MPI_STATUS_IGNORE);
-		MPI_File_close(&fh);
+		MPI_File_open(MPI_COMM_SELF, A_file, MPI_MODE_RDONLY, MPI_INFO_NULL, &config.A_file);
+		MPI_File_read_at(config.A_file, 0, config.A_dims, 2, MPI_INT, MPI_STATUS_IGNORE);
+		MPI_File_close(&config.A_file);
 		
 		//Matrix B
-		MPI_File_open(MPI_COMM_SELF, B_file, MPI_MODE_RDONLY, MPI_INFO_NULL, &fh);
-                MPI_File_read_at(fh, 0, config.B_dims, 2, MPI_INT, MPI_STATUS_IGNORE);
-                MPI_File_close(&fh);
-		//printf("%d", config.A_dims[0]);
-		//printf("%d", config.A_dims[1]);
+		MPI_File_open(MPI_COMM_SELF, B_file, MPI_MODE_RDONLY, MPI_INFO_NULL, &config.B_file);
+        MPI_File_read_at(config.B_file, 0, config.B_dims, 2, MPI_INT, MPI_STATUS_IGNORE);
+        MPI_File_close(&config.B_file);
+
+		if(!(config.A_dims[0] == config.B_dims[0] && config.A_dims[1] == config.B_dims[1])){
+			MPI_Finalize();
+			exit(1);
+		}
+		
 	}
 	/* Broadcast global matrix sizes */
 	MPI_Bcast(config.A_dims, 2, MPI_INT, 0, MPI_COMM_WORLD);
 	MPI_Bcast(config.B_dims, 2, MPI_INT, 0, MPI_COMM_WORLD);
-
+	config.matrix_size = config.A_dims[0];
 	
-	//if(world_rank == 1){
-	//	printf("%d", config.A_dims[0]);
-	//	printf("%d", config.A_dims[1]);
-	//}
-
 	/* Set dim of tiles relative to the number of processes as NxN where N=sqrt(world_size) */
-		
+	
+	//config.local_size = config.matrix_size / sqrt(config.world_size);
+
+
 
 	/* Verify dim of A and B matches for matul and both are square*/
 
@@ -77,7 +79,7 @@ void init_matmul(char *A_file, char *B_file, char *outfile)
 	/* Sub div cart communicator to N row communicator */
 
 	/* Sub div cart communicator to N col communicator */
-
+//MPI_Offset offset;
 	/* Setup sizes of full matrices */
 
 	/* Setup sizes of local matrix tiles */
