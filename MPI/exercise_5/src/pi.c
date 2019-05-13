@@ -55,11 +55,13 @@ void compute_pi(int flip, int *local_count, double *answer)
 		MPI_File_close(&fh);*/
 	}
 	MPI_File fh;
+	MPI_Offset offset;
 	MPI_File_open(MPI_COMM_SELF, "results.txt", MPI_MODE_CREATE | MPI_MODE_WRONLY, MPI_INFO_NULL, &fh);
-	MPI_File_write_all(fh, &local_count, 1, MPI_INT, MPI_STATUS_IGNORE);
+	offset = world_rank * sizeof(int);
+	MPI_File_write_at(fh, offset, local_count, 1, MPI_INT, MPI_STATUS_IGNORE);
 	
 	if(world_rank == 0){
-		MPI_File_write_all(fh, &answer, 1, MPI_INT, MPI_STATUS_IGNORE);
+		//MPI_File_write_at(fh, &answer, 1, MPI_INT, MPI_STATUS_IGNORE);
 		MPI_File_close(&fh);
 	}
 }
