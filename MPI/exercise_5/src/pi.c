@@ -47,7 +47,8 @@ void compute_pi(int flip, int *local_count, double *answer)
 
 		*answer = pi;
 	}
-	MPI_File fh = "results.txt";
-	MPI_File_open(MPI_COMM_WORLD, "results.txt", MPI_MODE_WRONLY, MPI_INFO_NULL, &fh);
-	MPI_File_write_all("results.txt", &local_count, 1, MPI_INT, MPI_STATUS_IGNORE);
+	MPI_File fh;
+	MPI_File_open(MPI_COMM_WORLD, fh, MPI_MODE_WRONLY, MPI_INFO_NULL, &fh);
+	MPI_File_write_all(fh, &local_count, 1, MPI_INT, MPI_STATUS_IGNORE);
+	MPI_File_close(&fh);
 }
