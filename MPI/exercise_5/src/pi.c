@@ -46,16 +46,20 @@ void compute_pi(int flip, int *local_count, double *answer)
 		double pi = 4 * P;
 
 		*answer = pi;
-		MPI_File fh;
+		/*MPI_File fh;
 		int *buf;
 		 buf = (int *)malloc( 1 * sizeof(int) );
     	buf[0] = world_rank;
 		MPI_File_open(MPI_COMM_SELF, "results.txt", MPI_MODE_CREATE | MPI_MODE_WRONLY, MPI_INFO_NULL, &fh);
 		MPI_File_write_all(fh, buf, 1, MPI_INT, MPI_STATUS_IGNORE);
-		MPI_File_close(&fh);
+		MPI_File_close(&fh);*/
 	}
-	/*MPI_File fh;
+	MPI_File fh;
 	MPI_File_open(MPI_COMM_SELF, "results.txt", MPI_MODE_CREATE | MPI_MODE_WRONLY, MPI_INFO_NULL, &fh);
 	MPI_File_write_all(fh, &local_count, 1, MPI_INT, MPI_STATUS_IGNORE);
-	MPI_File_close(&fh);*/
+	
+	if(world_rank == 0){
+		MPI_File_write_all(fh, &answer, 1, MPI_INT, MPI_STATUS_IGNORE);
+		MPI_File_close(&fh);
+	}
 }
