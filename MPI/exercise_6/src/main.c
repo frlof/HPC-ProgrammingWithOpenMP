@@ -46,8 +46,8 @@ int main(int argc, char *argv[])
 
 	init_matmul(argv[optind], argv[optind + 1], argv[optind + 2]);
 	MPI_Comm_rank(MPI_COMM_WORLD, &world_rank);
-
-	for (int i = 0; i < repeat; i++){
+	int i;
+	for (i = 0; i < repeat; i++){
 		MPI_Barrier(MPI_COMM_WORLD);
 		start_time = MPI_Wtime();
 		matmul();
