@@ -182,6 +182,6 @@ void compute_fox()
 		/* dgemm with blocks */
 		
 		/* Shfting block B upwards and receive from process below */
-		MPI_Cart_shift(config.coll_comm, 0, 1, &source, &dest);
+		MPI_Cart_shift(config.col_comm, 0, 1, &source, &dest);
 	}
 }
