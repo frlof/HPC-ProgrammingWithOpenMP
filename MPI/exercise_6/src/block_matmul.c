@@ -84,6 +84,7 @@ void init_matmul(char *A_file, char *B_file, char *outfile)
 	config.coords[0] = 0;
 	config.coords[1] = 1;
 	MPI_Cart_sub(config.grid_comm, config.coords, &config.row_comm);
+	MPI_Comm_size(config.grid_comm, &config.grid_rank);
 	/* Sub div cart communicator to N col communicator */
 	config.coords[0] = 1;
 	config.coords[1] = 0;
@@ -177,7 +178,7 @@ void compute_fox()
 	//int rootY = config.row_rank;
 	int i;
 	for (i = 0; i < config.dim[0]; i++) {
-		rootX = (config.row_rank + i) % sqrt(config.world_size);
+		rootX = (config.row_rank + i) % config.grid_rank;
 		printf("%d", rootX);
 		int rowID;
 		int inRow;
