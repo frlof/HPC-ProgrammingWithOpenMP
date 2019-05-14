@@ -201,7 +201,7 @@ void compute_fox()
 	MPI_Cart_shift(config.row_comm, 0, 1, &source, &dest);
 	int i;
 	int root;
-	config.A_tmp = malloc(sizeof(config.local_size));
+	config.A_tmp = (double*) malloc(sizeof(config.local_size*config.local_size));
 	for (i = 0; i < config.dim[0]; i++) {
 		/* Diag + i broadcast block A horizontally and use A_tmp to preserve own local A */
 		root = (config.row_rank + i) % config.dim[0];
