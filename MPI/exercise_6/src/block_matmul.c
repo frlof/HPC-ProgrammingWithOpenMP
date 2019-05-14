@@ -178,7 +178,7 @@ void compute_fox()
 	int i;
 	for (i = 0; i < config.dim[0]; i++) {
 		/* Diag + i broadcast block A horizontally and use A_tmp to preserve own local A */
-
+		MPI_Bcast(config.A, 2, MPI_INT, 0, config.col_comm);
 		/* dgemm with blocks */
 		
 		/* Shfting block B upwards and receive from process below */
