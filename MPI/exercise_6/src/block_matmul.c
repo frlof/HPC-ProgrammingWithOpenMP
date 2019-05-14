@@ -186,9 +186,9 @@ void compute_fox()
 		MPI_Comm_rank(config.row_comm, &rowID);
 		MPI_Comm_rank(config.col_comm, &inRow);
 		//printf("localSize: %d\n", config.local_size);
-		/*if(config.world_rank == 0){
+		if(config.world_rank == 0){
 			printf("[%d]   ID:%d   N:%d\n", config.world_rank, rowID, inRow);
-		}*/
+		}
 		
 
 		double **AMul;
