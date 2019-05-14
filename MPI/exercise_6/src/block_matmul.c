@@ -205,9 +205,9 @@ void compute_fox()
 			MPI_Bcast(config.A_tmp, tileSize, MPI_DOUBLE, rootX, config.row_comm);
 		}*/
 
-		if(config.world_rank == 0){
+	/*	if(config.world_rank == 0){
 			printf("[%d]   ID:%d   N:%d\n", config.world_rank, rowID, inRow);
-		}
+		} */
 
 		if(rootX == config.col_rank){
 			/*
@@ -254,23 +254,23 @@ void compute_fox()
 		//MPI_Isend(config.B, tileSize, MPI_DOUBLE, 0, config.world_rank, MPI_COMM_WORLD, &pelle);
 
 		//MPI_recv(config.B, tileSize, MPI_INT, i, i, MPI_COMM_WORLD, );
-		if(config.world_rank == 0){
+	/*	if(config.world_rank == 0){
 			printf("[%d]   ID:%d   N:%d\n", config.world_rank, rowID, inRow);
-		}
-		MPI_Cart_shift(config.col_comm, 0, 1, &source, &dest);
+		}*/
+		MPI_Cart_shift(config.row_comm, 0, 1, &source, &dest);
 
-		if(config.world_rank == 0){
+		/*if(config.world_rank == 0){
 			printf("[%d]   ID:%d   N:%d\n", config.world_rank, rowID, inRow);
-		}
+		}*/
 
 		//MPI_Sendrecv(config.B, tileSize, MPI_DOUBLE, dest, sendtag, source, recvtag, comm, status);
 
 
 		MPI_Sendrecv_replace(config.B, tileSize, MPI_DOUBLE, dest, config.col_rank, source, source, config.col_comm, MPI_STATUS_IGNORE);
 
-		if(config.world_rank == 0){
+	/*	if(config.world_rank == 0){
 			printf("[%d]   ID:%d   N:%d\n", config.world_rank, rowID, inRow);
-		}
+		}*/
 
 		rootX = (rootX+1)%config.row_size;
 
