@@ -109,7 +109,8 @@ void init_matmul(char *A_file, char *B_file, char *outfile)
 	MPI_Type_contiguous(3, MPI_DOUBLE, &arraytpe);
 	MPI_File_set_view(config.A_file, offset, MPI_DOUBLE, arraytype, "native", MPI_INFO_NULL);
 	*/
-	printf("%f\n", dataTmp[0]); 
+	printf("%f\n", dataTmp[1]); 
+	printf("%f\n", dataTmp[2]); 
 	/* Collective read blocks from files */
 
 	/* Close data source files */
