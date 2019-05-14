@@ -97,7 +97,7 @@ void init_matmul(char *A_file, char *B_file, char *outfile)
 	config.local_dims[1] = config.local_size;
 
 	/* Create subarray datatype for local matrix tile */
-	config.A_tmp = double[config.local_dims[0]][config.local_dims[1]];
+	config.A_tmp = malloc(sizeof(double) * (config.locals_dims[0] * config.local_dims[1]));
 	/* Create data array to load actual block matrix data */
 	double[config.local_dims[0] + config.local_dims[1]] dataTmp;
 	/* Set fileview of process to respective matrix block */
