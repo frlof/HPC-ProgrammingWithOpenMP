@@ -67,6 +67,7 @@ void init_matmul(char *A_file, char *B_file, char *outfile)
 			//printf("%d\n", config.col_rank);
 			MPI_Cart_shift(config.grid_comm, 1, 1, &source, &dest);
 			printf("%d\n", source);
+			printf("%d\n", dest);
 	}
 	//MPI_Bcast(1, 1, MPI_INT, )
 }
