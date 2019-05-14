@@ -48,10 +48,10 @@ void init_matmul(char *A_file, char *B_file, char *outfile)
 	if(config.world_rank == 63){
 		int coord[2];
 		MPI_Cart_coords(config.grid_comm, config.world_rank, 2, coord);
-		printf("%d\n", coord[0]);
-		printf("%d\n", coord[1]);
+		//printf("%d\n", coord[0]);
+		//printf("%d\n", coord[1]);
 		MPI_Comm_rank(config.grid_comm, &config.grid_rank);
-		printf("%d\n", config.grid_rank);
+		//printf("%d\n", config.grid_rank);
 	}
 	//MPI_Comm_rank(config.grid_comm, &config.grid_rank);
 	config.coords[0] = 0;
@@ -65,8 +65,8 @@ void init_matmul(char *A_file, char *B_file, char *outfile)
 	if(config.world_rank == 63){
 		int source;
 		int dest;
-			//printf("%d\n", config.row_rank);
-			//printf("%d\n", config.col_rank);
+			printf("%d\n", config.row_rank);
+			printf("%d\n", config.col_rank);
 			MPI_Cart_shift(config.grid_comm, 1, 1, &source, &dest);
 			printf("%d\n", source);
 			printf("%d\n", dest);
