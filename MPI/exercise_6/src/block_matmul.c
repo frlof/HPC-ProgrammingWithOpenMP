@@ -223,12 +223,25 @@ void compute_fox()
 		}
 
 		if(rootX == config.col_rank){
+			/*
 			int a,b,c;
-
 			for(a=0;a<config.local_size;a++){
 				for(b=0;b<config.local_size;b++){
 					for(c=0;c<config.local_size;c++){
 						config.C[a][b]+=config.A[a][c]*config.B[c][b];
+					}
+				}
+			}*/
+			int a,b,c;
+			for(a=0;a<config.local_size;a++){
+				for(b=0;b<config.local_size;b++){
+					for(c=0;c<config.local_size;c++){
+
+						int indexC = a * config.local_size + b;
+						int indexA = a * config.local_size + c;
+						int indexB = c * config.local_size + b;
+						//config.C[a][b]+=config.A_tmp[a][c]*config.B[c][b];
+						config.C[indexC]+=config.A[indexA]*config.B[indexB];
 					}
 				}
 			}
@@ -238,7 +251,12 @@ void compute_fox()
 			for(a=0;a<config.local_size;a++){
 				for(b=0;b<config.local_size;b++){
 					for(c=0;c<config.local_size;c++){
-						config.C[a][b]+=config.A_tmp[a][c]*config.B[c][b];
+
+						int indexC = a * config.local_size + b;
+						int indexA = a * config.local_size + c;
+						int indexB = c * config.local_size + b;
+						//config.C[a][b]+=config.A_tmp[a][c]*config.B[c][b];
+						config.C[indexC]+=config.A_tmp[indexA]*config.B[indexB];
 					}
 				}
 			}
