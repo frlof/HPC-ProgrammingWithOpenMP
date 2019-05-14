@@ -138,6 +138,7 @@ void init_matmul(char *A_file, char *B_file, char *outfile)
 	int startOffset[2] = {config.local_size * config.row_rank,config.local_size*config.col_rank};
 
 	MPI_Datatype toTile;
+	printf("%d\n", config.A_dims[0]);
 	MPI_Type_create_subarray(2, config.A_dims, config.local_dims, startOffset, MPI_ORDER_C, MPI_DOUBLE, &toTile);
 	MPI_Type_commit(&toTile);
 
