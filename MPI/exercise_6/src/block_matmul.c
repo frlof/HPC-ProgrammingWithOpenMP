@@ -41,6 +41,7 @@ void init_matmul(char *A_file, char *B_file, char *outfile)
         MPI_Comm_size(MPI_COMM_WORLD, &config.world_size);
 	if(config.world_rank == 0){
 		printf("kalle");
+		
 		MPI_File_open(MPI_COMM_SELF, A_file, MPI_MODE_RDONLY, MPI_INFO_NULL, &config.A_file);
                 MPI_File_read_at(config.A_file, 0, config.A_dims, 2, MPI_INT, MPI_STATUS_IGNORE);
 		printf("%d  %d\n", config.A_dims[0], config.A_dims[1]);
@@ -52,13 +53,7 @@ void init_matmul(char *A_file, char *B_file, char *outfile)
 		//printf("%f  %f\n", krabba[0], krabba[1]);
 		printf("BigArr:\n");
 		int i,j;
-		/*
-		for(i = 0; i < 5; i++){
-                	for(j = 0; j < 5; j++){
-				printf("%f ", krabba[i*5+j]);
-                	}
-			printf("\n");
-		}*/
+		
 		for(i = 0; i < 25; i++){
 			printf("%f ", krabba[i]);
 		}
@@ -76,7 +71,7 @@ void init_matmul(char *A_file, char *B_file, char *outfile)
 		MPI_Isend(krabba, 1, mysubarray, config.world_rank, config.world_rank, MPI_COMM_WORLD, &pelle);
 		double littleKrabba[10];
 		//MPI_Wait(&pelle, MPI_STATUS_IGNORE);
-		MPI_Recv(littleKrabba, 10, mysubarray, config.world_rank, config.world_rank, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+		MPI_Recv(littleKrabba, 10, MPI_DOUBLE, config.world_rank, config.world_rank, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 	
 		printf("LittleArr:\n");
 		for(i = 0; i < 10; i++){
@@ -87,6 +82,24 @@ void init_matmul(char *A_file, char *B_file, char *outfile)
 		MPI_Type_free(&mysubarray);
                 MPI_File_close(&config.A_file);
 		
+		//IMPORTANT CODE
+		/*
+		MPI_File_open(MPI_COMM_SELF, A_file, MPI_MODE_RDONLY, MPI_INFO_NULL, &config.A_file);
+		MPI_File_read_at(config.A_file, 0, config.A_dims, 2, MPI_INT, MPI_STATUS_IGNORE);
+
+		int startOffset[2] = {50,50};
+                int tileSize[2] = {10,10};
+
+		MPI_Datatype toTile;
+                MPI_Type_create_subarray(2, config.A_dims, tileSize, startOffset, MPI_ORDER_C, MPI_DOUBLE, &toTile);
+                MPI_Type_commit(&toTile);
+
+		MPI_Offset offset = 2 * sizeof(int);
+
+		MPI_File_set_view(config.A_file, offset , toTile, MPI_DOUBLE , "native", MPI_INFO_NULL);
+		double matrixData**;
+		MPI_File_read_all(config.A_file, matrixData, );
+		*/
 	}
 }
 
