@@ -207,7 +207,7 @@ void compute_fox()
 		root = (config.row_rank + i) % config.dim[0];
 		printf("%d\n", root);
 		if(root == config.col_rank){
-			MPI_Bcast(config.A, 1, config.block, root, config.col_comm);
+			//MPI_Bcast(config.A, 1, config.block, root, config.col_comm);
 
 		} else{
 			//MPI_Bcast(config.A_tmp, 1, config.block, root, config.row_comm);
