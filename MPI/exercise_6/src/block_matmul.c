@@ -138,9 +138,6 @@ void init_matmul(char *A_file, char *B_file, char *outfile)
 	MPI_Comm_size(config.col_comm, &config.col_size);
 
 	/* Setup sizes of full matrices */
-	config.A = malloc(sizeof(double) * (config.A_dims[0] * config.A_dims[1]));
-	config.B = malloc(sizeof(double) * (config.B_dims[0] * config.B_dims[1]));
-	config.C = malloc(sizeof(double) * (config.A_dims[0] * config.A_dims[1]));
 
 	/* Setup sizes of local matrix tiles */
 	config.local_size = config.matrix_size / sqrt(config.world_size);
@@ -149,30 +146,36 @@ void init_matmul(char *A_file, char *B_file, char *outfile)
 
 	/* Create subarray datatype for local matrix tile */
 
-	int startOffset[2] = {50,50};
-	int tileSize[2] = {10,10};
+	int startOffset[2] = {config.local_size * config.row_rank,config.local_size*config.col_rank};
 
 	MPI_Datatype toTile;
-	MPI_Type_create_subarray(2, config.A_dims, tileSize, startOffset, MPI_ORDER_C, MPI_DOUBLE, &toTile);
+	MPI_Type_create_subarray(2, config.A_dims, config.local_dims, startOffset, MPI_ORDER_C, MPI_DOUBLE, &toTile);
 	MPI_Type_commit(&toTile);
 
 	
 	/* Create data array to load actual block matrix data */
-	double matrixData[10*10];
+	//double matrixData[10*10];
+	config.A = malloc(sizeof(double) * (config.local_size * config.local_size));
+	config.B = malloc(sizeof(double) * (config.local_size * config.local_size));
+	//config.C = malloc(sizeof(double) * (config.A_dims[0] * config.A_dims[1]));
 
 
 	/* Set fileview of process to respective matrix block */
 
 	MPI_Offset offset = 2 * sizeof(int);
 	MPI_File_set_view(config.A_file, offset , toTile, MPI_DOUBLE , "native", MPI_INFO_NULL);
-	
+	MPI_File_set_view(config.B_file, offset , toTile, MPI_DOUBLE , "native", MPI_INFO_NULL);
+		
 	/* Collective read blocks from files */
 	
-	MPI_File_read_all(config.A_file, matrixData,10*10 ,MPI_DOUBLE,  MPI_STATUS_IGNORE);
+	MPI_File_read_all(config.A_file, config.A, config.local_size*config.local_size,MPI_DOUBLE,  MPI_STATUS_IGNORE);
+	MPI_File_read_all(config.B_file, config.B, config.local_size*config.local_size,MPI_DOUBLE,  MPI_STATUS_IGNORE);
+
 
 	/* Close data source files */
 	MPI_File_close(&config.A_file);
 	MPI_File_close(&config.B_file);
+	MPI_Type_free(&toTile);
 }
 
 void cleanup_matmul()
