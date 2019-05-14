@@ -34,7 +34,7 @@ struct Config {
 };
 struct Config config;
 
-void init_matmul(char *A_file, char *B_file, char *outfile)
+void init_matmuls(char *A_file, char *B_file, char *outfile)
 {
 	MPI_Comm_rank(MPI_COMM_WORLD, &config.world_rank);
 	MPI_Comm_size(MPI_COMM_WORLD, &config.world_size);
@@ -80,7 +80,7 @@ void init_matmul(char *A_file, char *B_file, char *outfile)
 	//MPI_Bcast(1, 1, MPI_INT, )
 }
 
-void init_matmuls(char *A_file, char *B_file, char *outfile)
+void init_matmul(char *A_file, char *B_file, char *outfile)
 {
 	MPI_Comm_rank(MPI_COMM_WORLD, &config.world_rank);
 	MPI_Comm_size(MPI_COMM_WORLD, &config.world_size);
@@ -131,6 +131,12 @@ void init_matmuls(char *A_file, char *B_file, char *outfile)
 	config.coords[1] = 0;
 	MPI_Cart_sub(config.grid_comm, config.coords, &config.col_comm);
 
+	MPI_Comm_rank(config.row_comm, &config.row_rank);
+	MPI_Comm_size(config.row_comm, &config.row_size);
+	
+	MPI_Comm_rank(config.coll_comm, &config.coll_rank);
+	MPI_Comm_size(config.coll_comm, &config.coll_size);
+
 	/* Setup sizes of full matrices */
 	config.A = malloc(sizeof(double) * (config.A_dims[0] * config.A_dims[1]));
 	config.B = malloc(sizeof(double) * (config.B_dims[0] * config.B_dims[1]));
@@ -142,21 +148,11 @@ void init_matmuls(char *A_file, char *B_file, char *outfile)
 	config.local_dims[1] = config.local_size;
 
 	/* Create subarray datatype for local matrix tile */
-	config.A_tmp = malloc(sizeof(double) * (config.local_dims[0] * config.local_dims[1]));
+
 	/* Create data array to load actual block matrix data */
-	double dataTmp[config.local_dims[0] * config.local_dims[1]];
+
 	/* Set fileview of process to respective matrix block */
-	MPI_Offset offset = 2 * sizeof(int);
-	int count = config.A_dims[0] * config.A_dims[1];
-	MPI_File_open(MPI_COMM_SELF, A_file, MPI_MODE_RDONLY, MPI_INFO_NULL, &config.A_file);
-	MPI_File_read_at(config.A_file, offset, &dataTmp, count, MPI_DOUBLE, MPI_STATUS_IGNORE);
-	MPI_File_close(&config.A_file);
-	/*MPI_Datatype arraytype;
-	MPI_Type_contiguous(3, MPI_DOUBLE, &arraytpe);
-	MPI_File_set_view(config.A_file, offset, MPI_DOUBLE, arraytype, "native", MPI_INFO_NULL);
-	*/
-	printf("%f\n", dataTmp[1]); 
-	printf("%f\n", dataTmp[2]); 
+
 	/* Collective read blocks from files */
 
 	/* Close data source files */
@@ -177,6 +173,8 @@ void compute_fox()
 {
 
 	/* Compute source and target for verticle shift of B blocks */
+	int source, dest;
+	MPI_Cart_shift(config.row_comm, 1, 1, &source, &dest);
 	int i;
 	for (i = 0; i < config.dim[0]; i++) {
 		/* Diag + i broadcast block A horizontally and use A_tmp to preserve own local A */
@@ -184,6 +182,6 @@ void compute_fox()
 		/* dgemm with blocks */
 		
 		/* Shfting block B upwards and receive from process below */
-
+		MPI_Cart_shift(config.coll_comm, 0, 1, &source, &dest);
 	}
 }
