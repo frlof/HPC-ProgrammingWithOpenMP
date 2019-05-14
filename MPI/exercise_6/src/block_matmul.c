@@ -137,6 +137,9 @@ void init_matmul(char *A_file, char *B_file, char *outfile)
 	MPI_Comm_rank(config.col_comm, &config.col_rank);
 	MPI_Comm_size(config.col_comm, &config.col_size);
 
+	if(config.world_rank == 0 || config.world_rank == 1 || config.world_rank 2){
+		printf("%d\n", config.row_rank);
+	}
 	/* Setup sizes of full matrices */
 
 	/* Setup sizes of local matrix tiles */
@@ -192,13 +195,18 @@ void cleanup_matmul()
 void compute_fox()
 {
 
-	/* Compute source and target for verticle shift of B blocks */
+	/* Compute source and target for vertical shift of B blocks */
 	int source, dest;
 	MPI_Cart_shift(config.row_comm, 0, 1, &source, &dest);
 	int i;
+
 	for (i = 0; i < config.dim[0]; i++) {
 		/* Diag + i broadcast block A horizontally and use A_tmp to preserve own local A */
-		MPI_Bcast(config.A, 2, MPI_INT, 0, config.col_comm);
+		int broad = 0;
+		if(i == config.row_coll && i == config.row_rank){
+
+		}
+		MPI_Bcast(config.A, 2, MPI_INT, broad, config.row_comm);
 		/* dgemm with blocks */
 		
 		/* Shfting block B upwards and receive from process below */
