@@ -118,7 +118,7 @@ void init_matmul(char *A_file, char *B_file, char *outfile)
 	
 	/* Create data array to load actual block matrix data */
 	//double matrixData[10*10];
-	printf("krabba %d\n", config.local_size);
+	//printf("krabba %d\n", config.local_size);
 	config.A = malloc(sizeof(double) * (config.local_size * config.local_size));
 	config.A_tmp = malloc(sizeof(double) * (config.local_size * config.local_size));
 	config.B = malloc(sizeof(double) * (config.local_size * config.local_size));
@@ -183,7 +183,7 @@ void compute_fox()
 
 		MPI_Comm_rank(config.row_comm, &rowID);
 		MPI_Comm_rank(config.col_comm, &inRow);
-		printf("localSize: %d\n", config.local_size);
+		//printf("localSize: %d\n", config.local_size);
 		/*if(config.world_rank == 0){
 			printf("[%d]   ID:%d   N:%d\n", config.world_rank, rowID, inRow);
 		}*/
