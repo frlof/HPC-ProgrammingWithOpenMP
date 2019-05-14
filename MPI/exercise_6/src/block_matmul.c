@@ -198,9 +198,11 @@ void compute_fox()
 
 	/* Compute source and target for vertical shift of B blocks */
 	int source, dest;
-	MPI_Cart_shift(config.row_comm, 0, 1, &source, &dest);
+	//MPI_Cart_shift(config.row_comm, 0, 1, &source, &dest);
 	int i;
 	int root;
+	source = (config.row_rank + 1) % config.dim[0];
+	dest = (config.row_rank + config.dim[0] -1) % config.dim[0];
 	config.A_tmp = (double*) malloc(sizeof(config.local_size*config.local_size));
 	for (i = 0; i < config.dim[0]; i++) {
 		/* Diag + i broadcast block A horizontally and use A_tmp to preserve own local A */
