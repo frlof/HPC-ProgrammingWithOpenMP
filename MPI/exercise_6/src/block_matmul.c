@@ -206,9 +206,9 @@ void compute_fox()
 			MPI_Bcast(config.A_tmp, tileSize, MPI_DOUBLE, rootX, config.row_comm);
 		}*/
 
-	/*	if(config.world_rank == 0){
+		if(config.world_rank == 0){
 			printf("[%d]   ID:%d   N:%d\n", config.world_rank, rowID, inRow);
-		} */
+		} 
 
 		if(rootX == config.col_rank){
 			/*
