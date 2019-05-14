@@ -34,37 +34,6 @@ struct Config {
 };
 struct Config config;
 
-void init_matmuls(char *A_file, char *B_file, char *outfile)
-{
-	MPI_Comm_rank(MPI_COMM_WORLD, &config.world_rank);
-	MPI_Comm_size(MPI_COMM_WORLD, &config.world_size);
-	config.outfile = outfile;
-
-	int wrap[2];
-	wrap[0] = wrap[1] = 1;
-	config.dim[0] = 8;
-	config.dim[1] = 8;
-	MPI_Cart_create(MPI_COMM_WORLD, 2, config.dim, wrap, 1, &config.grid_comm);
-	if(config.world_rank == 63){
-		int coord[2];
-		MPI_Cart_coords(config.grid_comm, config.world_rank, 2, coord);
-		//printf("%d\n", coord[0]);
-		//printf("%d\n", coord[1]);
-		MPI_Comm_rank(config.grid_comm, &config.grid_rank);
-		//printf("%d\n", config.grid_rank);
-	}
-	//MPI_Comm_rank(config.grid_comm, &config.grid_rank);
-	config.coords[0] = 0;
-	config.coords[1] = 1;
-	MPI_Cart_sub(config.grid_comm, config.coords, &config.row_comm);
-	MPI_Comm_rank(config.row_comm, &config.row_rank);
-	config.coords[0] = 1;
-	config.coords[1] = 0;
-	MPI_Cart_sub(config.grid_comm, config.coords, &config.col_comm);
-	MPI_Comm_rank(config.col_comm, &config.col_rank);
-	//MPI_Bcast(1, 1, MPI_INT, )
-}
-
 void init_matmul(char *A_file, char *B_file, char *outfile)
 {
 	MPI_Comm_rank(MPI_COMM_WORLD, &config.world_rank);
@@ -79,7 +48,8 @@ void init_matmul(char *A_file, char *B_file, char *outfile)
 		MPI_File_open(MPI_COMM_SELF, A_file, MPI_MODE_RDONLY, MPI_INFO_NULL, &config.A_file);
 		MPI_File_read_at(config.A_file, 0, config.A_dims, 2, MPI_INT, MPI_STATUS_IGNORE);
 		//MPI_File_close(&config.A_file);
-		
+		printf("%d\n", config.A_dims[0]);
+		printf("%d\n", config.A_dims[1]);
 		//Matrix B
 		MPI_File_open(MPI_COMM_SELF, B_file, MPI_MODE_RDONLY, MPI_INFO_NULL, &config.B_file);
         MPI_File_read_at(config.B_file, 0, config.B_dims, 2, MPI_INT, MPI_STATUS_IGNORE);
@@ -96,6 +66,7 @@ void init_matmul(char *A_file, char *B_file, char *outfile)
 	/* Broadcast global matrix sizes */
 	MPI_Bcast(config.A_dims, 2, MPI_INT, 0, MPI_COMM_WORLD);
 	MPI_Bcast(config.B_dims, 2, MPI_INT, 0, MPI_COMM_WORLD);
+
 	config.matrix_size = config.A_dims[0];
 	
 	/* Set dim of tiles relative to the number of processes as NxN where N=sqrt(world_size) */
@@ -138,7 +109,7 @@ void init_matmul(char *A_file, char *B_file, char *outfile)
 	int startOffset[2] = {config.local_size * config.row_rank,config.local_size*config.col_rank};
 
 	MPI_Datatype toTile;
-	printf("%d\n", config.A_dims[0]);
+
 	MPI_Type_create_subarray(2, config.A_dims, config.local_dims, startOffset, MPI_ORDER_C, MPI_DOUBLE, &toTile);
 	MPI_Type_commit(&toTile);
 
