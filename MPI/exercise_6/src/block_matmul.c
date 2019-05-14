@@ -179,7 +179,7 @@ void init_matmul(char *A_file, char *B_file, char *outfile)
 	/* Close data source files */
 	MPI_File_close(&config.A_file);
 	MPI_File_close(&config.B_file);
-	MPI_Type_free(&config.block);
+	//MPI_Type_free(&config.block);
 }
 
 void cleanup_matmul()
