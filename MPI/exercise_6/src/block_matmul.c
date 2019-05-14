@@ -93,12 +93,12 @@ void init_matmul(char *A_file, char *B_file, char *outfile)
 		//Matrix A
 		MPI_File_open(MPI_COMM_SELF, A_file, MPI_MODE_RDONLY, MPI_INFO_NULL, &config.A_file);
 		MPI_File_read_at(config.A_file, 0, config.A_dims, 2, MPI_INT, MPI_STATUS_IGNORE);
-		MPI_File_close(&config.A_file);
+		//MPI_File_close(&config.A_file);
 		
 		//Matrix B
 		MPI_File_open(MPI_COMM_SELF, B_file, MPI_MODE_RDONLY, MPI_INFO_NULL, &config.B_file);
         MPI_File_read_at(config.B_file, 0, config.B_dims, 2, MPI_INT, MPI_STATUS_IGNORE);
-        MPI_File_close(&config.B_file);
+        //MPI_File_close(&config.B_file);
 
 		
 		/* Verify dim of A and B matches for matul and both are square*/
@@ -149,13 +149,30 @@ void init_matmul(char *A_file, char *B_file, char *outfile)
 
 	/* Create subarray datatype for local matrix tile */
 
+	int startOffset[2] = {50,50};
+	int tileSize[2] = {10,10};
+
+	MPI_Datatype toTile;
+	MPI_Type_create_subarray(2, config.A_dims, tileSize, startOffset, MPI_ORDER_C, MPI_DOUBLE, &toTile);
+	MPI_Type_commit(&toTile);
+
+	
 	/* Create data array to load actual block matrix data */
+	double matrixData[10*10];
+
 
 	/* Set fileview of process to respective matrix block */
 
+	MPI_Offset offset = 2 * sizeof(int);
+	MPI_File_set_view(config.A_file, offset , toTile, MPI_DOUBLE , "native", MPI_INFO_NULL);
+	
 	/* Collective read blocks from files */
+	
+	MPI_File_read_all(config.A_file, matrixData,10*10 ,MPI_DOUBLE,  MPI_STATUS_IGNORE);
 
 	/* Close data source files */
+	MPI_File_close(&config.A_file);
+	MPI_File_close(&config.B_file);
 }
 
 void cleanup_matmul()
