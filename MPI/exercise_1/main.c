@@ -15,7 +15,7 @@ int main(int argc, char **argv)
     next_rank = (rank + 1) % num_ranks;
 
     MPI_Send(&rank, 1, MPI_INT, next_rank, rank, MPI_COMM_WORLD);
-    MPI_Recv(&recv_rank, 1, MPI_INT, prev_rank, prev_rank, MPI_COMM_WORLD, ...);
+    MPI_Recv(&recv_rank, 1, MPI_INT, prev_rank, prev_rank, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 
     printf("[%d] I have received %d from rank=%d\n", rank, recv_rank, prev_rank);
     MPI_Finalize();
