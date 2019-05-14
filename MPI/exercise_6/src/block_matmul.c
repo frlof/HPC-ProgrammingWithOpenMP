@@ -196,8 +196,8 @@ void cleanup_matmul()
 
 void compute_fox()
 {	
-	int rowID;
-	int inRow;
+	//int rowID;
+	//int inRow;
 
 	//MPI_Comm_rank(config.row_comm, &rowID);
 	//MPI_Comm_size(config.row_comm, &inRow);
@@ -215,7 +215,7 @@ void compute_fox()
 	int rootX = config.row_rank;
 	int rootY = config.row_rank;
 	for (i = 0; i < config.dim[0]; i++) {
-		double **AMul;
+		//double **AMul;
 		if(rootX == config.col_rank){
 			MPI_Bcast(config.A, tileSize, MPI_DOUBLE, rootX, config.row_comm);
 		}else{
@@ -250,7 +250,7 @@ void compute_fox()
 		MPI_Cart_shift(config.col_comm, 0, 1, &source, &dest);
 
 		//MPI_Sendrecv(config.B, tileSize, MPI_DOUBLE, dest, sendtag, source, recvtag, comm, status);
-		MPI_Sendrecv(config.B, tileSize, MPI_DOUBLE, dest, config.col_rank, source, source, config.col_comm, MPI_STATUS_IGNORE);
+		MPI_Sendrecv_replace(config.B, tileSize, MPI_DOUBLE, dest, config.col_rank, source, source, config.col_comm, MPI_STATUS_IGNORE);
 
 		rootX++;
 
