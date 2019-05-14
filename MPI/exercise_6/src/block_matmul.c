@@ -62,21 +62,6 @@ void init_matmuls(char *A_file, char *B_file, char *outfile)
 	config.coords[1] = 0;
 	MPI_Cart_sub(config.grid_comm, config.coords, &config.col_comm);
 	MPI_Comm_rank(config.col_comm, &config.col_rank);
-	if(config.world_rank == 63){
-		int source;
-		int dest;
-			printf("%d\n", config.row_rank);
-			printf("%d\n", config.col_rank);
-			MPI_Cart_shift(config.grid_comm, 0, 1, &source, &dest);
-			printf("%d\n", source);
-			printf("%d\n", dest);
-			MPI_Cart_shift(config.row_comm, 0, 1, &source, &dest);
-			printf("%d\n", source);
-			printf("%d\n", dest);
-			MPI_Cart_shift(config.col_comm, 0, 1, &source, &dest);
-			printf("%d\n", source);
-			printf("%d\n", dest);
-	}
 	//MPI_Bcast(1, 1, MPI_INT, )
 }
 
@@ -272,6 +257,14 @@ void compute_fox()
 		MPI_Cart_shift(config.col_comm, 0, 1, &source, &dest);
 
 		//MPI_Sendrecv(config.B, tileSize, MPI_DOUBLE, dest, sendtag, source, recvtag, comm, status);
+		int rowID;
+		int inRow;
+
+		MPI_Comm_rank(config.row_comm, &rowID);
+		MPI_Comm_size(config.row_comm, &inRow);
+		
+		print("[%d]   ID:%d   N:%d\n", config.world_rank, rowID, inRow);
+		
 		MPI_Sendrecv_replace(config.B, tileSize, MPI_DOUBLE, dest, config.col_rank, source, source, config.col_comm, MPI_STATUS_IGNORE);
 
 		rootX++;
