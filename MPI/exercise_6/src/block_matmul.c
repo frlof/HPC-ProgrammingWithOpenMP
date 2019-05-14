@@ -137,7 +137,10 @@ void init_matmul(char *A_file, char *B_file, char *outfile)
 	MPI_Comm_rank(config.col_comm, &config.col_rank);
 	MPI_Comm_size(config.col_comm, &config.col_size);
 	
-	printf("%d,%d,%d\n", config.row_rank, config.col_rank, config.world_rank);
+	if(config.world_rank == 0 || config.world_rank == 1 || config.world_rank == 2){
+		printf("%d,%d,%d\n", config.row_rank, config.col_rank, config.world_rank);
+	}
+
 	/* Setup sizes of full matrices */
 
 	/* Setup sizes of local matrix tiles */
