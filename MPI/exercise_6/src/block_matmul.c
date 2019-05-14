@@ -178,6 +178,7 @@ void compute_fox()
 	int i;
 	for (i = 0; i < config.dim[0]; i++) {
 		rootX = (config.row_rank + i) % config.grid_rank;
+		printf("%d", rootX);
 		int rowID;
 		int inRow;
 
