@@ -38,6 +38,10 @@ void init_matmul(char *A_file, char *B_file, char *outfile)
 {
 	MPI_Comm_rank(MPI_COMM_WORLD, &config.world_rank);
 	MPI_Comm_size(MPI_COMM_WORLD, &config.world_size);
+	if(config.world_rank == 0){
+		printf("World size: %d" config.world_size)
+	}
+	printf("thread: %d" config.world_rank)
 }
 
 void init_matmul_copy(char *A_file, char *B_file, char *outfile)
