@@ -213,7 +213,8 @@ void compute_fox()
 	int tileSize = config.local_size * config.local_size;
 
 	int rootX = config.row_rank;
-	int rootY = config.row_rank;
+	//int rootY = config.row_rank;
+	int i;
 	for (i = 0; i < config.dim[0]; i++) {
 		//double **AMul;
 		if(rootX == config.col_rank){
