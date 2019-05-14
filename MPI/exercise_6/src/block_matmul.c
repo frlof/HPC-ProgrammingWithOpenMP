@@ -44,7 +44,7 @@ void init_matmul(char *A_file, char *B_file, char *outfile)
 	config.outfile = outfile;
 	
 	/* Get matrix size header */
-	if(world_rank == 0){	
+	if(config.world_rank == 0){	
 		//Matrix A
 		MPI_File_open(MPI_COMM_SELF, A_file, MPI_MODE_RDONLY, MPI_INFO_NULL, &config.A_file);
 		MPI_File_read_at(config.A_file, 0, config.A_dims, 2, MPI_INT, MPI_STATUS_IGNORE);
@@ -55,6 +55,8 @@ void init_matmul(char *A_file, char *B_file, char *outfile)
         MPI_File_read_at(config.B_file, 0, config.B_dims, 2, MPI_INT, MPI_STATUS_IGNORE);
         MPI_File_close(&config.B_file);
 
+		
+		/* Verify dim of A and B matches for matul and both are square*/
 		if(!(config.A_dims[0] == config.B_dims[0] && config.A_dims[1] == config.B_dims[1])){
 			MPI_Finalize();
 			exit(1);
@@ -68,16 +70,14 @@ void init_matmul(char *A_file, char *B_file, char *outfile)
 	
 	/* Set dim of tiles relative to the number of processes as NxN where N=sqrt(world_size) */
 	
-	//config.local_size = config.matrix_size / sqrt(config.world_size);
-
-
-
-	/* Verify dim of A and B matches for matul and both are square*/
-
+	config.local_size = config.matrix_size / sqrt(config.world_size);
+	config.local_dims[0] = config.local_size;
+	config.local_dims[1] = config.local_size;
 	/* Create Cart communicator for NxN processes */
 
+	MPI_CART_CREATE(MPI_COMM_WORLD, 2, config.local_dims, )
 	/* Sub div cart communicator to N row communicator */
-
+	
 	/* Sub div cart communicator to N col communicator */
 //MPI_Offset offset;
 	/* Setup sizes of full matrices */
@@ -110,13 +110,13 @@ void compute_fox()
 {
 
 	/* Compute source and target for verticle shift of B blocks */
-//	int i;
-//	for (i = 0; i < config.dim[0]; i++) {
+	int i;
+	for (i = 0; i < config.dim[0]; i++) {
 		/* Diag + i broadcast block A horizontally and use A_tmp to preserve own local A */
 
 		/* dgemm with blocks */
 		
 		/* Shfting block B upwards and receive from process below */
 
-//	}
+	}
 }
