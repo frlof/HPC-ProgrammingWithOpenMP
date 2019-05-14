@@ -194,10 +194,16 @@ void compute_fox()
 		double **AMul;
 		if(rootX == config.col_rank){
 			//AMul = &config.A;
-			MPI_Send(&config.A, tileSize, MPI_DOUBLE, rootX, config.row_comm);
+			int i;
+			for(i = 0; i < config.row_size; i++){
+				if(i != rootX){
+					MPI_Send(&config.A, tileSize, MPI_DOUBLE, i, 0, config.row_comm);
+				}
+			}
+
 		}else{
 			//AMul = &config.A_tmp;
-			MPI_Recv(&config.A_tmp, tileSize, MPI_DOUBLE, rootX, config.row_comm, MPI_STATUS_IGNORE);
+			MPI_Recv(&config.A_tmp, tileSize, MPI_DOUBLE, rootX, 0, config.row_comm, MPI_STATUS_IGNORE);
 		}
 		printf("[%d]   ID:%d   N:%d\n", config.world_rank, rowID, inRow);
 		double temp = 10;
