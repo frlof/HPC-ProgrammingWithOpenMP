@@ -172,7 +172,7 @@ void compute_fox()
 	//MPI_Cart_shift(config.col_comm, 0, 1, &source, &dest);
 	
 	int tileSize = config.local_size * config.local_size;
-
+	MPI_Bcast(AMul, tileSize, MPI_DOUBLE, 0, config.row_comm);
 	int rootX; 
 	//int rootY = config.row_rank;
 	int i;
@@ -191,9 +191,9 @@ void compute_fox()
 
 		double **AMul;
 		if(rootX == config.col_rank){
-			AMul = config.A;
+			AMul = &config.A;
 		}else{
-			AMul = config.A_tmp;
+			AMul = &config.A_tmp;
 		}
 		printf("[%d]   ID:%d   N:%d\n", config.world_rank, rowID, inRow);
 		double temp = 10;
