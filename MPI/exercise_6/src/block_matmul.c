@@ -159,9 +159,9 @@ void init_matmul(char *A_file, char *B_file, char *outfile)
 	
 	/* Create data array to load actual block matrix data */
 	//double matrixData[10*10];
-	config.A = calloc(sizeof(double) * (config.local_size * config.local_size));
-	config.B = calloc(sizeof(double) * (config.local_size * config.local_size));
-	config.C = calloc(sizeof(double) * (config.local_size * config.local_size));
+	config.A = malloc(sizeof(double) * (config.local_size * config.local_size));
+	config.B = malloc(sizeof(double) * (config.local_size * config.local_size));
+	config.C = malloc(sizeof(double) * (config.local_size * config.local_size));
 
 
 	/* Set fileview of process to respective matrix block */
@@ -250,9 +250,11 @@ void compute_fox()
 			int a,b,c;
 			for(a=0;a<config.local_size;a++){
 				for(b=0;b<config.local_size;b++){
+					int indexC = a * config.local_size + b;
+					config.C[indexC] = 0;
 					for(c=0;c<config.local_size;c++){
 
-						int indexC = a * config.local_size + b;
+						
 						int indexA = a * config.local_size + c;
 						int indexB = c * config.local_size + b;
 						//config.C[a][b]+=config.A_tmp[a][c]*config.B[c][b];
