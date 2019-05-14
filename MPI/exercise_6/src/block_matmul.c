@@ -42,6 +42,8 @@ void init_matmul(char *A_file, char *B_file, char *outfile)
 
 	int wrap[2];
 	wrap[0] = wrap[1] = 1;
+	config.dim[0] = 2;
+	config.dim[1] = 2;
 	MPI_Cart_create(MPI_COMM_WORLD, 2, config.dim, wrap, 1, &config.grid_comm);
 	if(config.world_rank == 0){
 		int coord[2];
