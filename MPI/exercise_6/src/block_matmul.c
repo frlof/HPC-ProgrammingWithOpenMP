@@ -222,10 +222,10 @@ void compute_fox()
 		double **AMul;
 		if(rootX == config.col_rank){
 			AMul = &config.A;
-			printf("pointer: %p   %p\n", *AMul, config.A);
+			printf("[%d] pointer: %p   %p\n", config.world_rank,*AMul, config.A);
 		}else{
 			AMul = &config.A_tmp;
-			printf("pointer: %p   %p\n", *AMul, config.A_tmp);
+			printf("[%d] pointer: %p   %p\n", config.world_rank,*AMul, config.A_tmp);
 		}
 		//printf("%p   %p\n", *AMul, config.A);
 		
