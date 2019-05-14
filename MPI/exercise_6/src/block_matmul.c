@@ -84,7 +84,6 @@ void init_matmul(char *A_file, char *B_file, char *outfile)
 	config.coords[0] = 0;
 	config.coords[1] = 1;
 	MPI_Cart_sub(config.grid_comm, config.coords, &config.row_comm);
-	MPI_Comm_size(config.grid_comm, &config.grid_rank);
 	/* Sub div cart communicator to N col communicator */
 	config.coords[0] = 1;
 	config.coords[1] = 0;
@@ -178,36 +177,27 @@ void compute_fox()
 	//int rootY = config.row_rank;
 	int i;
 	for (i = 0; i < config.dim[0]; i++) {
-		rootX = (config.row_rank + i) % config.grid_rank;
-		printf("%d", rootX);
+		rootX = config.row_rank + ;
 		int rowID;
 		int inRow;
 
 		MPI_Comm_rank(config.row_comm, &rowID);
 		MPI_Comm_rank(config.col_comm, &inRow);
 		//printf("localSize: %d\n", config.local_size);
-		if(config.world_rank == 0){
+		/*if(config.world_rank == 0){
 			printf("[%d]   ID:%d   N:%d\n", config.world_rank, rowID, inRow);
-		}
+		}*/
 		
 
 		double **AMul;
 		if(rootX == config.col_rank){
-			//AMul = &config.A;
-			int i;
-			for(i = 0; i < config.row_size; i++){
-				if(i != rootX){
-					MPI_Send(&config.A, tileSize, MPI_DOUBLE, i, 0, config.row_comm);
-				}
-			}
-
+			AMul = config.A;
 		}else{
-			//AMul = &config.A_tmp;
-			MPI_Recv(&config.A_tmp, tileSize, MPI_DOUBLE, rootX, 0, config.row_comm, MPI_STATUS_IGNORE);
+			AMul = config.A_tmp;
 		}
 		printf("[%d]   ID:%d   N:%d\n", config.world_rank, rowID, inRow);
 		double temp = 10;
-		//MPI_Bcast(*AMul, tileSize, MPI_DOUBLE, rootX, config.row_comm);
+		MPI_Bcast(AMul, tileSize, MPI_DOUBLE, rootX, config.row_comm);
 		/*if(rootX == config.col_rank){
 			printf("upper: [%d]   ID:%d   N:%d\n", config.world_rank, rowID, inRow);
 			MPI_Bcast(config.A, tileSize, MPI_DOUBLE, rootX, config.row_comm);
