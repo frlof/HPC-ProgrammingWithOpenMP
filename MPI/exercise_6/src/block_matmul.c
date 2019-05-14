@@ -145,10 +145,10 @@ void init_matmul(char *A_file, char *B_file, char *outfile)
 	/* Create data array to load actual block matrix data */
 	//double matrixData[10*10];
 	//printf("krabba %d\n", config.local_size);
-	config.A = malloc(sizeof(double) * (config.local_size * config.local_size));
-	config.A_tmp = malloc(sizeof(double) * (config.local_size * config.local_size));
-	config.B = malloc(sizeof(double) * (config.local_size * config.local_size));
-	config.C = malloc(sizeof(double) * (config.local_size * config.local_size));
+	config.A = (double *)malloc(sizeof(double) * (config.local_size * config.local_size));
+	config.A_tmp = (double *)malloc(sizeof(double) * (config.local_size * config.local_size));
+	config.B = (double *)malloc(sizeof(double) * (config.local_size * config.local_size));
+	config.C = (double *)malloc(sizeof(double) * (config.local_size * config.local_size));
 
 
 	/* Set fileview of process to respective matrix block */
@@ -228,6 +228,7 @@ void compute_fox()
 			printf("pointer: %p   %p\n", *AMul, config.A_tmp);
 		}
 		//printf("%p   %p\n", *AMul, config.A);
+		
 		MPI_Bcast(*AMul, tileSize, MPI_DOUBLE, rootX, config.row_comm);
 		/*if(rootX == config.col_rank){
 			printf("upper: [%d]   ID:%d   N:%d\n", config.world_rank, rowID, inRow);
