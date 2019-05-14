@@ -102,7 +102,7 @@ void init_matmul(char *A_file, char *B_file, char *outfile)
 	double dataTmp[config.local_dims[0] * config.local_dims[1]];
 	/* Set fileview of process to respective matrix block */
 	MPI_Offset offset = 2 * sizeof(int);
-	int count = config.A_dims[0];
+	int count = config.A_dims[0] * config.A_dims[1]-1;
 	MPI_File_open(MPI_COMM_SELF, A_file, MPI_MODE_RDONLY, MPI_INFO_NULL, &config.A_file);
 	MPI_File_read_at(config.A_file, offset, &dataTmp, count, MPI_DOUBLE, MPI_STATUS_IGNORE);
 	MPI_File_close(&config.A_file);
