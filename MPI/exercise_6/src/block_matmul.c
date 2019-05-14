@@ -34,8 +34,23 @@ struct Config {
 };
 struct Config config;
 
-
 void init_matmul(char *A_file, char *B_file, char *outfile)
+{
+	MPI_Comm_rank(MPI_COMM_WORLD, &config.world_rank);
+	MPI_Comm_size(MPI_COMM_WORLD, &config.world_size);
+	config.outfile = outfile;
+
+	int wrap[2];
+	wrap[0] = wrap[1] = 1;
+	MPI_Cart_create(MPI_COMM_WORLD, 2, config.dim, wrap, 1, &config.grid_comm);
+	if(config.world_rank == 0){
+		int coord[2];
+		MPI_Cart_coords(config.grid_comm, config.world_rank, 2, coord);
+		printf("%d", coord[0]);
+	}
+}
+
+void init_matmuls(char *A_file, char *B_file, char *outfile)
 {
 	MPI_Comm_rank(MPI_COMM_WORLD, &config.world_rank);
 	MPI_Comm_size(MPI_COMM_WORLD, &config.world_size);
@@ -102,7 +117,7 @@ void init_matmul(char *A_file, char *B_file, char *outfile)
 	double dataTmp[config.local_dims[0] * config.local_dims[1]];
 	/* Set fileview of process to respective matrix block */
 	MPI_Offset offset = 2 * sizeof(int);
-	int count = config.A_dims[0] * config.A_dims[1]-1;
+	int count = config.A_dims[0] * config.A_dims[1];
 	MPI_File_open(MPI_COMM_SELF, A_file, MPI_MODE_RDONLY, MPI_INFO_NULL, &config.A_file);
 	MPI_File_read_at(config.A_file, offset, &dataTmp, count, MPI_DOUBLE, MPI_STATUS_IGNORE);
 	MPI_File_close(&config.A_file);
