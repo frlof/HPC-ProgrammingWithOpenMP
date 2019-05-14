@@ -37,6 +37,61 @@ struct Config config;
 
 void init_matmul(char *A_file, char *B_file, char *outfile)
 {
+        MPI_Comm_rank(MPI_COMM_WORLD, &config.world_rank);
+        MPI_Comm_size(MPI_COMM_WORLD, &config.world_size);
+	if(config.world_rank == 0){
+		printf("kalle");
+		MPI_File_open(MPI_COMM_SELF, A_file, MPI_MODE_RDONLY, MPI_INFO_NULL, &config.A_file);
+                MPI_File_read_at(config.A_file, 0, config.A_dims, 2, MPI_INT, MPI_STATUS_IGNORE);
+		printf("%d  %d\n", config.A_dims[0], config.A_dims[1]);
+		
+		double krabba[25];
+		//int offset = sizeof(int)*2;
+		MPI_Offset offset = 2 * sizeof(int);
+		MPI_File_read_at(config.A_file, offset, krabba, 25, MPI_DOUBLE, MPI_STATUS_IGNORE);
+		//printf("%f  %f\n", krabba[0], krabba[1]);
+		printf("BigArr:\n");
+		int i,j;
+		/*
+		for(i = 0; i < 5; i++){
+                	for(j = 0; j < 5; j++){
+				printf("%f ", krabba[i*5+j]);
+                	}
+			printf("\n");
+		}*/
+		for(i = 0; i < 25; i++){
+			printf("%f ", krabba[i]);
+		}
+		printf("\n");
+		//int starts[2] = {3,1};
+		int starts[1] = {7};
+		int littleSize[1] = {10};
+		int bigSize[1] = {25};
+		
+		MPI_Datatype mysubarray;
+		MPI_Type_create_subarray(1, bigSize, littleSize, starts, MPI_ORDER_C, MPI_DOUBLE, &mysubarray);
+		MPI_Type_commit(&mysubarray);
+		
+		MPI_Request pelle;
+		MPI_Isend(krabba, 1, mysubarray, config.world_rank, config.world_rank, MPI_COMM_WORLD, &pelle);
+		double littleKrabba[10];
+		//MPI_Wait(&pelle, MPI_STATUS_IGNORE);
+		MPI_Recv(littleKrabba, 10, mysubarray, config.world_rank, config.world_rank, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+	
+		printf("LittleArr:\n");
+		for(i = 0; i < 10; i++){
+                        printf("%f ", littleKrabba[i]);
+                }
+                printf("\n");
+
+		MPI_Type_free(&mysubarray);
+                MPI_File_close(&config.A_file);
+		
+	}
+}
+
+void init_matmul_snurresprett(char *A_file, char *B_file, char *outfile)
+{
 	MPI_Comm_rank(MPI_COMM_WORLD, &config.world_rank);
 	MPI_Comm_size(MPI_COMM_WORLD, &config.world_size);
 	MPI_Comm lastBarrier;
