@@ -1,4 +1,5 @@
 #include "block_matmul.h"
+#include <unistd.h>
 
 
 struct Config {
@@ -38,10 +39,30 @@ void init_matmul(char *A_file, char *B_file, char *outfile)
 {
 	MPI_Comm_rank(MPI_COMM_WORLD, &config.world_rank);
 	MPI_Comm_size(MPI_COMM_WORLD, &config.world_size);
+	MPI_Comm lastBarrier;
+	MPI_Comm_split(MPI_COMM_WORLD, 0, config.world_rank, &lastBarrier);
+
+	//MPI_Bcast(&lastBarrier, 1, MPI_Comm, 0, MPI_COMM_WORLD);
+	//MPI_Bcast(&lastBarrier, 1, MPI_INT, 0, MPI_COMM_WORLD);
+
+	//MPI_Request request;
 	if(config.world_rank == 0){
-		printf("World size: %d" config.world_size)
+		printf("World size: %d\n", config.world_size);
+		printf("thread: %d\n", config.world_rank);
+	}else{
+		//MPI_Wait(&request, MPI_STATUS_IGNORE);
+		MPI_Recv(NULL, 0, MPI_INT, config.world_rank-1, config.world_rank-1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+		printf("thread: %d\n", config.world_rank);
 	}
-	printf("thread: %d" config.world_rank)
+	if(config.world_rank != config.world_size-1){
+        	MPI_Send(NULL, 0, MPI_INT, config.world_rank+1, config.world_rank, MPI_COMM_WORLD);
+        }
+	if(config.world_rank == 10){
+		usleep(1000*1000);
+	}
+	//MPI_Barrier(MPI_COMM_WORLD);
+	MPI_Barrier(lastBarrier);
+	printf("wtf");
 }
 
 void init_matmul_copy(char *A_file, char *B_file, char *outfile)
