@@ -60,7 +60,7 @@ void init_matmul(char *A_file, char *B_file, char *outfile)
 	config.coords[1] = 0;
 	MPI_Cart_sub(config.grid_comm, config.coords, &config.col_comm);
 	MPI_Comm_rank(config.row_comm, &config.col_rank);
-	if(config.world_rank == 10){
+	if(config.world_rank == 11){
 			printf("%d\n", config.row_rank);
 			printf("%d\n", config.col_rank);
 	}
