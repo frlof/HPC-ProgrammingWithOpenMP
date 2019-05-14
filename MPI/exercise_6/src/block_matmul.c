@@ -210,7 +210,7 @@ void compute_fox()
 		MPI_Comm_rank(config.row_comm, &rowID);
 		MPI_Comm_size(config.row_comm, &inRow);
 
-		printf("palsternacka   %d    %d", config.row_rank, inRow);
+		printf("palsternacka   %d    %d\n", config.row_rank, rowID);
 
 
 		printf("localSize: %d\n", config.local_size);
