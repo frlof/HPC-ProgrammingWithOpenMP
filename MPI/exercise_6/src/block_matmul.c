@@ -173,11 +173,11 @@ void compute_fox()
 	
 	int tileSize = config.local_size * config.local_size;
 
-	int rootX = config.row_rank;
+	int rootX; 
 	//int rootY = config.row_rank;
 	int i;
 	for (i = 0; i < config.dim[0]; i++) {
-
+		rootX = (config.row_rank + i) % config.grid_rank;
 		int rowID;
 		int inRow;
 
@@ -197,7 +197,7 @@ void compute_fox()
 		}
 		printf("[%d]   ID:%d   N:%d\n", config.world_rank, rowID, inRow);
 		double temp = 10;
-		MPI_Bcast(AMul, tileSize, MPI_DOUBLE, 0, config.row_comm);
+		MPI_Bcast(AMul, tileSize, MPI_DOUBLE, rootX, config.row_comm);
 		/*if(rootX == config.col_rank){
 			printf("upper: [%d]   ID:%d   N:%d\n", config.world_rank, rowID, inRow);
 			MPI_Bcast(config.A, tileSize, MPI_DOUBLE, rootX, config.row_comm);
