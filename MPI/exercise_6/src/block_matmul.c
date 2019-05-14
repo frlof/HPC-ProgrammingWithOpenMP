@@ -45,14 +45,6 @@ void init_matmuls(char *A_file, char *B_file, char *outfile)
 	config.dim[0] = 8;
 	config.dim[1] = 8;
 	MPI_Cart_create(MPI_COMM_WORLD, 2, config.dim, wrap, 1, &config.grid_comm);
-	if(config.world_rank == 63){
-		int coord[2];
-		MPI_Cart_coords(config.grid_comm, config.world_rank, 2, coord);
-		//printf("%d\n", coord[0]);
-		//printf("%d\n", coord[1]);
-		MPI_Comm_rank(config.grid_comm, &config.grid_rank);
-		//printf("%d\n", config.grid_rank);
-	}
 	//MPI_Comm_rank(config.grid_comm, &config.grid_rank);
 	config.coords[0] = 0;
 	config.coords[1] = 1;
@@ -108,14 +100,12 @@ void init_matmul(char *A_file, char *B_file, char *outfile)
 	MPI_Cart_create(MPI_COMM_WORLD, 2, config.dim, wrap, 1, &config.grid_comm);
 
 	/* Sub div cart communicator to N row communicator */
-	//config.coords[0] = 0;
-	//config.coords[1] = 1;
-	config.coords[0] = 1;
-	config.coords[1] = 0;
-	MPI_Cart_sub(config.grid_comm, config.coords, &config.row_comm);
-	/* Sub div cart communicator to N col communicator */
 	config.coords[0] = 0;
 	config.coords[1] = 1;
+	MPI_Cart_sub(config.grid_comm, config.coords, &config.row_comm);
+	/* Sub div cart communicator to N col communicator */
+	config.coords[0] = 1;
+	config.coords[1] = 0;
 	MPI_Cart_sub(config.grid_comm, config.coords, &config.col_comm);
 
 	MPI_Comm_rank(config.row_comm, &config.row_rank);
