@@ -102,7 +102,9 @@ void init_matmul(char *A_file, char *B_file, char *outfile)
 	char dataTmp[config.local_dims[0] + config.local_dims[1]];
 	/* Set fileview of process to respective matrix block */
 	MPI_Offset offset = 2 * sizeof(int);
-	MPI_File_set_view(config.A_file, offset, MPI_DOUBLE, MPI_DOUBLE, &dataTmp, MPI_INFO_NULL);
+	MPI_Dataype arraytype;
+	MPI_Type_contiguous(3, MPI_DOUBLE, &arraytpe);
+	MPI_File_set_view(config.A_file, offset, MPI_DOUBLE, arraytype, "native", MPI_INFO_NULL);
 	printf("%d\n", dataTmp[0][0]);
 	/* Collective read blocks from files */
 
