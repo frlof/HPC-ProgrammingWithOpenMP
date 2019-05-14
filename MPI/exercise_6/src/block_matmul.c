@@ -194,16 +194,30 @@ void cleanup_matmul()
 }
 
 void compute_fox()
-{
+{	
+	int rowID;
+	int inRow;
+
+	MPI_Comm_rank(config.row_comm, &rowID);
+	MPI_Comm_size(config.row_comm, &inRow);
+
+	print("[%d]   ID:%d   N:%d\n", config.world_rank, rowID, inRow);
+
+
 
 	/* Compute source and target for vertical shift of B blocks */
-	int source, dest;
-	MPI_Cart_shift(config.row_comm, 0, 1, &source, &dest);
-	int i;
+	//int source, dest;
+	//MPI_Cart_shift(config.row_comm, 0, 1, &source, &dest);
+	//int i;
+	
+	//MPI_Bcast(config.A, 2, MPI_INT, broad, config.row_comm);
+	
 
-	for (i = 0; i < config.dim[0]; i++) {
+
+	//for (i = 0; i < config.dim[0]; i++) {
 		/* Diag + i broadcast block A horizontally and use A_tmp to preserve own local A */
-		int broad = 0;
+	//	int broad = 0;
+
 		/*if(i == config.row_coll && i == config.row_rank){
 
 		}
@@ -212,5 +226,5 @@ void compute_fox()
 		
 		/* Shfting block B upwards and receive from process below */
 		//MPI_Cart_shift(config.col_comm, 0, 1, &source, &dest);
-	}
+	//}
 }
