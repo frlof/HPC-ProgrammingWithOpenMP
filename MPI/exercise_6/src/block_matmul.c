@@ -172,12 +172,17 @@ void compute_fox()
 	//MPI_Cart_shift(config.col_comm, 0, 1, &source, &dest);
 	
 	int tileSize = config.local_size * config.local_size;
-	MPI_Bcast(AMul, tileSize, MPI_DOUBLE, 0, config.row_comm);
+	double temp;
+	if(config.world_rank == 0){
+		temp = 1;
+	}
+	temp = 0;
+	MPI_Bcast(&temp, tileSize, MPI_DOUBLE, 0, config.row_comm);
 	int rootX; 
 	//int rootY = config.row_rank;
 	int i;
 	for (i = 0; i < config.dim[0]; i++) {
-		rootX = config.row_rank + ;
+		rootX = config.row_rank;
 		int rowID;
 		int inRow;
 
