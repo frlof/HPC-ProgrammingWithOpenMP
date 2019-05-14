@@ -212,7 +212,7 @@ void compute_fox()
 		} else{
 			MPI_Bcast(config.A_tmp, 1, MPI_DOUBLE, root, config.row_comm);
 		}
-		//MPI_Sendrecv_replace(config.B, 1, config.block, dest, 0, source, 0, config.col_comm, MPI_STATUS_IGNORE);
+		MPI_Sendrecv_replace(config.B, 1, MPI_DOUBLE, dest, 0, source, 0, config.col_comm, MPI_STATUS_IGNORE);
 		/*if(i == config.row_coll && i == config.row_rank){
 
 		}
