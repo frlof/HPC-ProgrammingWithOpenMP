@@ -206,12 +206,12 @@ void compute_fox()
 		/* Diag + i broadcast block A horizontally and use A_tmp to preserve own local A */
 		root = (config.row_rank + i) % config.dim[0];
 		if(root == config.col_rank){
-			MPI_Bcast(config.A, 1, local_matrix_mpi_t, root, config.col_comm);
+			MPI_Bcast(config.A, 1, config.block, root, config.col_comm);
 
 		} else{
-			MPI_Bcast(config.A_tmp, 1, local_matrix_mpi_t, root, config.row_comm);
+			MPI_Bcast(config.A_tmp, 1, config.block, root, config.row_comm);
 		}
-		MPI_Sendrecv_replace(config.B, 1, local_matrix_mpi_t, dest, 0, source, 0, config.col_comm, MPI_STATUS_IGNORE);
+		MPI_Sendrecv_replace(config.B, 1, config.block, dest, 0, source, 0, config.col_comm, MPI_STATUS_IGNORE);
 		/*if(i == config.row_coll && i == config.row_rank){
 
 		}
