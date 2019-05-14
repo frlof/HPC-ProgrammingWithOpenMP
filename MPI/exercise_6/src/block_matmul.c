@@ -48,7 +48,7 @@ void init_matmul(char *A_file, char *B_file, char *outfile)
 	if(config.world_rank == 0){
 		int coord[2];
 		MPI_Cart_coords(config.grid_comm, config.world_rank, 2, coord);
-		printf("%d", coord[0]);
+		printf("%d\n", coord[0]);
 	}
 }
 
