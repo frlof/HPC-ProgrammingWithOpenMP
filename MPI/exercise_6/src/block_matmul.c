@@ -108,12 +108,14 @@ void init_matmul(char *A_file, char *B_file, char *outfile)
 	MPI_Cart_create(MPI_COMM_WORLD, 2, config.dim, wrap, 1, &config.grid_comm);
 
 	/* Sub div cart communicator to N row communicator */
-	config.coords[0] = 0;
-	config.coords[1] = 1;
-	MPI_Cart_sub(config.grid_comm, config.coords, &config.row_comm);
-	/* Sub div cart communicator to N col communicator */
+	//config.coords[0] = 0;
+	//config.coords[1] = 1;
 	config.coords[0] = 1;
 	config.coords[1] = 0;
+	MPI_Cart_sub(config.grid_comm, config.coords, &config.row_comm);
+	/* Sub div cart communicator to N col communicator */
+	config.coords[0] = 0;
+	config.coords[1] = 1;
 	MPI_Cart_sub(config.grid_comm, config.coords, &config.col_comm);
 
 	MPI_Comm_rank(config.row_comm, &config.row_rank);
@@ -222,10 +224,10 @@ void compute_fox()
 		double **AMul;
 		if(rootX == config.col_rank){
 			AMul = &config.A;
-			printf("[%d] pointer: %p   %p\n", config.world_rank,*AMul, config.A);
+			//printf("[%d] pointer: %p   %p\n", config.world_rank,*AMul, config.A);
 		}else{
 			AMul = &config.A_tmp;
-			printf("[%d] pointer: %p   %p\n", config.world_rank,*AMul, config.A_tmp);
+			//printf("[%d] pointer: %p   %p\n", config.world_rank,*AMul, config.A_tmp);
 		}
 		//printf("%p   %p\n", *AMul, config.A);
 		
