@@ -53,6 +53,8 @@ void init_matmul(char *A_file, char *B_file, char *outfile)
 		//Matrix B
 		MPI_File_open(MPI_COMM_SELF, B_file, MPI_MODE_RDONLY, MPI_INFO_NULL, &config.B_file);
         MPI_File_read_at(config.B_file, 0, config.B_dims, 2, MPI_INT, MPI_STATUS_IGNORE);
+		printf("%d\n", config.A_dims[0]);
+		printf("%d\n", config.A_dims[1]);
         //MPI_File_close(&config.B_file);
 
 		
