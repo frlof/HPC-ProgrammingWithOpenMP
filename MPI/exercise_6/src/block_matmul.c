@@ -215,8 +215,10 @@ void compute_fox()
 
 		//double **AMul;
 		if(rootX == config.col_rank){
+			printf("upper: [%d]   ID:%d   N:%d\n", config.world_rank, rowID, inRow);
 			MPI_Bcast(config.A, tileSize, MPI_DOUBLE, rootX, config.row_comm);
 		}else{
+			printf("lower: [%d]   ID:%d   N:%d\n", config.world_rank, rowID, inRow);
 			MPI_Bcast(config.A_tmp, tileSize, MPI_DOUBLE, rootX, config.row_comm);
 		}
 
