@@ -51,7 +51,7 @@ void init_matmul(char *A_file, char *B_file, char *outfile)
 		printf("%d\n", coord[0]);
 		printf("%d\n", coord[1]);
 		MPI_Comm_rank(config.grid_comm, &config.grid_rank);
-		printf("%d"\n, config.grid_rank);
+		printf("%d\n", config.grid_rank);
 	}
 	//MPI_Comm_rank(config.grid_comm, &config.grid_rank);
 	config.coords[0] = 0;
