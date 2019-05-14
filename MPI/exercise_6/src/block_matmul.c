@@ -45,17 +45,19 @@ void init_matmul(char *A_file, char *B_file, char *outfile)
 	config.dim[0] = 8;
 	config.dim[1] = 8;
 	MPI_Cart_create(MPI_COMM_WORLD, 2, config.dim, wrap, 1, &config.grid_comm);
-	if(config.world_rank == 63){
+	/*if(config.world_rank == 63){
 		int coord[2];
 		MPI_Cart_coords(config.grid_comm, config.world_rank, 2, coord);
 		printf("%d\n", coord[0]);
 		printf("%d\n", coord[1]);
-	}
-	MPI_Comm_rank(config.grid_comm, &config.grid_rank);
-	if(config.grid_rank == [7][7]){
-		printf("apa");
-	}
+	}*/
+	//MPI_Comm_rank(config.grid_comm, &config.grid_rank);
+	config.coords[0] = 0;
+	config.coords[1] = 1;
+	MPI_Cart_sub(config.grid_comm, config.coords, &config.row_comm);
 
+	printf("%d\n", MPI_Comm_rank(config.row_comm, &config.row_rank));
+	MPI_Bcast(1, 1, MPI_INT, )
 }
 
 void init_matmuls(char *A_file, char *B_file, char *outfile)
