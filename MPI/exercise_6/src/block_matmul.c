@@ -172,8 +172,8 @@ void init_matmul(char *A_file, char *B_file, char *outfile)
 		
 	/* Collective read blocks from files */
 	
-	MPI_File_read_all(config.A_file, config.A, config.local_size*config.local_size,MPI_DOUBLE,  MPI_STATUS_IGNORE);
-	MPI_File_read_all(config.B_file, config.B, config.local_size*config.local_size,MPI_DOUBLE,  MPI_STATUS_IGNORE);
+	MPI_File_read_all(config.A_file, config.A, config.local_size*config.local_size, config.block,  MPI_STATUS_IGNORE);
+	MPI_File_read_all(config.B_file, config.B, config.local_size*config.local_size, config.block,  MPI_STATUS_IGNORE);
 
 
 	/* Close data source files */
@@ -205,9 +205,9 @@ void compute_fox()
 	for (i = 0; i < config.dim[0]; i++) {
 		/* Diag + i broadcast block A horizontally and use A_tmp to preserve own local A */
 		root = (config.row_rank + i) % config.dim[0];
-		printf("%d\n", root);
+		//printf("%d\n", root);
 		if(root == config.col_rank){
-			//MPI_Bcast(config.A, 1, config.block, root, config.col_comm);
+			MPI_Bcast(config.A, 1, config.block, root, config.col_comm);
 
 		} else{
 			//MPI_Bcast(config.A_tmp, 1, config.block, root, config.row_comm);
