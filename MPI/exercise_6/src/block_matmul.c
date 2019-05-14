@@ -177,7 +177,7 @@ void compute_fox()
 		temp = 1;
 	}
 	temp = 0;
-	MPI_Bcast(&temp, tileSize, MPI_DOUBLE, 0, config.row_comm);
+	MPI_Bcast(&temp, 1, MPI_DOUBLE, 0, config.row_comm);
 	int rootX; 
 	//int rootY = config.row_rank;
 	int i;
