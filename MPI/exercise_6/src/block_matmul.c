@@ -177,7 +177,7 @@ void compute_fox()
 	//int rootY = config.row_rank;
 	int i;
 	for (i = 0; i < config.dim[0]; i++) {
-		rootX = (config.row_rank + i) % config.grid_rank;
+		rootX = (config.row_rank + i) % sqrt(config.world_size);
 		printf("%d", rootX);
 		int rowID;
 		int inRow;
