@@ -144,6 +144,7 @@ void init_matmul(char *A_file, char *B_file, char *outfile)
 	
 	/* Create data array to load actual block matrix data */
 	//double matrixData[10*10];
+	printf("krabba %d\n", config.local_size);
 	config.A = malloc(sizeof(double) * (config.local_size * config.local_size));
 	config.A_tmp = malloc(sizeof(double) * (config.local_size * config.local_size));
 	config.B = malloc(sizeof(double) * (config.local_size * config.local_size));
