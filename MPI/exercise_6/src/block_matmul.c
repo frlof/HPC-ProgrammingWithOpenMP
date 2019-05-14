@@ -87,9 +87,9 @@ void init_matmul(char *A_file, char *B_file, char *outfile)
 	MPI_Cart_sub(config.grid_comm, config.coords, &config.col_comm);
 
 	/* Setup sizes of full matrices */
-	config.A = double[config.A_dims[0]][config.A_dims[1]];
-	config.B = double[config.B_dims[0]][config.B_dims[1]];
-	config.C = double[config.A_dims[0]][config.A_dims[1]];
+	config.A = malloc(sizeof(double) * (config.A_dims[0] * config.A_dims[1]));
+	config.B = malloc(sizeof(double) * (config.B_dims[0] * config.B_dims[1]));
+	config.C = malloc(sizeof(double) * (config.A_dims[0] * config.A_dims[1]));
 
 	/* Setup sizes of local matrix tiles */
 	config.local_size = config.matrix_size / sqrt(config.world_size);
