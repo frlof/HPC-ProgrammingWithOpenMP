@@ -73,12 +73,21 @@ void init_matmul(char *A_file, char *B_file, char *outfile)
 	config.local_size = config.matrix_size / sqrt(config.world_size);
 	config.local_dims[0] = config.local_size;
 	config.local_dims[1] = config.local_size;
+	config.dim[0] = sqrt(config.world_size);
+	config.dim[1] = sqrt(config.world_size);
 	/* Create Cart communicator for NxN processes */
+	int wrap[2];
+	wrap[0], wrap[1] = 1;
+	MPI_Cart_create(MPI_COMM_WORLD, 2, config.dim, wrap, 1, &config.grid_comm);
 
-	MPI_CART_CREATE(MPI_COMM_WORLD, 2, config.local_dims, )
 	/* Sub div cart communicator to N row communicator */
-	
+	config.coords[0] = 0;
+	config.coords[1] = 1;
+	MPI_Cart_sub(config.grid_comm, config.coords, &config.row_comm);
 	/* Sub div cart communicator to N col communicator */
+	config.coords[0] = 1;
+	config.coords[1] = 0;
+	MPI_Cart_sub(config.grid_comm, config.coords, &config.col_comm);
 //MPI_Offset offset;
 	/* Setup sizes of full matrices */
 
