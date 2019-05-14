@@ -100,7 +100,7 @@ void init_matmul(char *A_file, char *B_file, char *outfile)
 	config.A_tmp = malloc(sizeof(double) * (config.local_dims[0] * config.local_dims[1]));
 	/* Create data array to load actual block matrix data */
 	double dataTmp[config.local_dims[0] * config.local_dims[1]];
-	/* Set fileview of process to respective matrix block */d
+	/* Set fileview of process to respective matrix block */
 	MPI_Offset offset = 2 * sizeof(int);
 	MPI_File_open(MPI_COMM_SELF, B_file, MPI_MODE_RDONLY, MPI_INFO_NULL, &config.A_file);
 	MPI_File_read_at(config.A_file, offset, &dataTmp, 2, MPI_INT, MPI_STATUS_IGNORE);
@@ -109,7 +109,7 @@ void init_matmul(char *A_file, char *B_file, char *outfile)
 	MPI_Type_contiguous(3, MPI_DOUBLE, &arraytpe);
 	MPI_File_set_view(config.A_file, offset, MPI_DOUBLE, arraytype, "native", MPI_INFO_NULL);
 	*/
-	printf("%d\n", dataTmp[0]); 
+	printf("%f\n", dataTmp[0]); 
 	/* Collective read blocks from files */
 
 	/* Close data source files */
