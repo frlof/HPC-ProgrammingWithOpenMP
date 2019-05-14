@@ -144,7 +144,7 @@ void init_matmul(char *A_file, char *B_file, char *outfile)
 	
 	/* Create data array to load actual block matrix data */
 	//double matrixData[10*10];
-	printf("krabba %d\n", config.local_size);
+	//printf("krabba %d\n", config.local_size);
 	config.A = malloc(sizeof(double) * (config.local_size * config.local_size));
 	config.A_tmp = malloc(sizeof(double) * (config.local_size * config.local_size));
 	config.B = malloc(sizeof(double) * (config.local_size * config.local_size));
@@ -210,10 +210,10 @@ void compute_fox()
 		MPI_Comm_rank(config.row_comm, &rowID);
 		MPI_Comm_size(config.row_comm, &inRow);
 
-		printf("palsternacka   %d    %d\n", config.row_rank, rowID);
+		//printf("palsternacka   %d    %d\n", config.row_rank, rowID);
 
 
-		printf("localSize: %d\n", config.local_size);
+		//printf("localSize: %d\n", config.local_size);
 		if(config.world_rank == 0){
 			printf("[%d]   ID:%d   N:%d\n", config.world_rank, rowID, inRow);
 		}
@@ -222,9 +222,12 @@ void compute_fox()
 		double **AMul;
 		if(rootX == config.col_rank){
 			AMul = &config.A;
+			printf("pointer: %p   %p\n", *AMul, config.A);
 		}else{
 			AMul = &config.A_tmp;
+			printf("pointer: %p   %p\n", *AMul, config.A_tmp);
 		}
+		//printf("%p   %p\n", *AMul, config.A);
 		MPI_Bcast(*AMul, tileSize, MPI_DOUBLE, rootX, config.row_comm);
 		/*if(rootX == config.col_rank){
 			printf("upper: [%d]   ID:%d   N:%d\n", config.world_rank, rowID, inRow);
