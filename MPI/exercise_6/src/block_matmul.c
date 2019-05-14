@@ -172,8 +172,8 @@ void init_matmul(char *A_file, char *B_file, char *outfile)
 		
 	/* Collective read blocks from files */
 	
-	MPI_File_read_all(config.A_file, config.A, config.local_size*config.local_size, config.block,  MPI_STATUS_IGNORE);
-	MPI_File_read_all(config.B_file, config.B, config.local_size*config.local_size, config.block,  MPI_STATUS_IGNORE);
+	MPI_File_read_all(config.A_file, config.A, config.local_size*config.local_size, config.block, MPI_STATUS_IGNORE);
+	MPI_File_read_all(config.B_file, config.B, config.local_size*config.local_size, config.block, MPI_STATUS_IGNORE);
 
 
 	/* Close data source files */
@@ -207,10 +207,10 @@ void compute_fox()
 		root = (config.row_rank + i) % config.dim[0];
 		//printf("%d\n", root);
 		if(root == config.col_rank){
-			MPI_Bcast(config.A, 1, config.block, root, config.col_comm);
+			//MPI_Bcast(config.A, 1, config.block, root, config.col_comm);
 
 		} else{
-			//MPI_Bcast(config.A_tmp, 1, config.block, root, config.row_comm);
+			MPI_Bcast(config.A_tmp, 1, config.block, root, config.row_comm);
 		}
 		//MPI_Sendrecv_replace(config.B, 1, config.block, dest, 0, source, 0, config.col_comm, MPI_STATUS_IGNORE);
 		/*if(i == config.row_coll && i == config.row_rank){
