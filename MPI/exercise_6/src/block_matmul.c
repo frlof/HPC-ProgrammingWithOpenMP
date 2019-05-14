@@ -159,9 +159,9 @@ void init_matmul(char *A_file, char *B_file, char *outfile)
 	
 	/* Create data array to load actual block matrix data */
 	//double matrixData[10*10];
-	config.A = malloc(sizeof(double) * (config.local_size * config.local_size));
-	config.B = malloc(sizeof(double) * (config.local_size * config.local_size));
-	//config.C = malloc(sizeof(double) * (config.A_dims[0] * config.A_dims[1]));
+	config.A = calloc(sizeof(double) * (config.local_size * config.local_size));
+	config.B = calloc(sizeof(double) * (config.local_size * config.local_size));
+	config.C = calloc(sizeof(double) * (config.local_size * config.local_size));
 
 
 	/* Set fileview of process to respective matrix block */
@@ -193,28 +193,71 @@ void cleanup_matmul()
 	/* Cleanup */
 }
 
+
 void compute_fox()
 {	
 	int rowID;
 	int inRow;
 
-	MPI_Comm_rank(config.row_comm, &rowID);
-	MPI_Comm_size(config.row_comm, &inRow);
-
-	print("[%d]   ID:%d   N:%d\n", config.world_rank, rowID, inRow);
+	//MPI_Comm_rank(config.row_comm, &rowID);
+	//MPI_Comm_size(config.row_comm, &inRow);
+	
+	//print("[%d]   ID:%d   N:%d\n", config.world_rank, rowID, inRow);
 
 
 
 	/* Compute source and target for vertical shift of B blocks */
-	//int source, dest;
-	//MPI_Cart_shift(config.row_comm, 0, 1, &source, &dest);
-	//int i;
+	int source, dest;
+	//MPI_Cart_shift(config.col_comm, 0, 1, &source, &dest);
 	
-	//MPI_Bcast(config.A, 2, MPI_INT, broad, config.row_comm);
-	
+	int tileSize = config.local_size * config.local_size;
+
+	int rootX = config.row_rank;
+	int rootY = config.row_rank;
+	for (i = 0; i < config.dim[0]; i++) {
+		double **AMul;
+		if(rootX == config.col_rank){
+			MPI_Bcast(config.A, tileSize, MPI_DOUBLE, rootX, config.row_comm);
+		}else{
+			MPI_Bcast(config.A_tmp, tileSize, MPI_DOUBLE, rootX, config.row_comm);
+		}
+
+		if(rootX == config.col_rank){
+			int a,b,c;
+
+			for(a=0;a<config.local_size;a++){
+				for(b=0;b<config.local_size;b++){
+					for(c=0;c<config.local_size;c++){
+						config.C[a][b]+=config.A[a][c]*config.B[c][b];
+					}
+				}
+			}
+
+		}else{
+			int a,b,c;
+			for(a=0;a<config.local_size;a++){
+				for(b=0;b<config.local_size;b++){
+					for(c=0;c<config.local_size;c++){
+						config.C[a][b]+=config.A_tmp[a][c]*config.B[c][b];
+					}
+				}
+			}
+		}
+		//MPI_Request pelle;
+		//MPI_Isend(config.B, tileSize, MPI_DOUBLE, 0, config.world_rank, MPI_COMM_WORLD, &pelle);
+
+		//MPI_recv(config.B, tileSize, MPI_INT, i, i, MPI_COMM_WORLD, );
+		MPI_Cart_shift(config.col_comm, 0, 1, &source, &dest);
+
+		//MPI_Sendrecv(config.B, tileSize, MPI_DOUBLE, dest, sendtag, source, recvtag, comm, status);
+		MPI_Sendrecv(config.B, tileSize, MPI_DOUBLE, dest, config.col_rank, source, source, config.col_comm, MPI_STATUS_IGNORE);
+
+		rootX++;
+
+		
 
 
-	//for (i = 0; i < config.dim[0]; i++) {
+
 		/* Diag + i broadcast block A horizontally and use A_tmp to preserve own local A */
 	//	int broad = 0;
 
@@ -226,5 +269,5 @@ void compute_fox()
 		
 		/* Shfting block B upwards and receive from process below */
 		//MPI_Cart_shift(config.col_comm, 0, 1, &source, &dest);
-	//}
+	}
 }
