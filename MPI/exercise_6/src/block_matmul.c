@@ -69,12 +69,9 @@ void init_matmul(char *A_file, char *B_file, char *outfile)
 	config.matrix_size = config.A_dims[0];
 	
 	/* Set dim of tiles relative to the number of processes as NxN where N=sqrt(world_size) */
-	
-	config.local_size = config.matrix_size / sqrt(config.world_size);
-	config.local_dims[0] = config.local_size;
-	config.local_dims[1] = config.local_size;
 	config.dim[0] = sqrt(config.world_size);
 	config.dim[1] = sqrt(config.world_size);
+
 	/* Create Cart communicator for NxN processes */
 	int wrap[2];
 	wrap[0] = wrap[1] = 1;
@@ -88,17 +85,25 @@ void init_matmul(char *A_file, char *B_file, char *outfile)
 	config.coords[0] = 1;
 	config.coords[1] = 0;
 	MPI_Cart_sub(config.grid_comm, config.coords, &config.col_comm);
-//MPI_Offset offset;
+
 	/* Setup sizes of full matrices */
+	config.A = double[config.A_dims[0]][config.A_dims[1]];
+	config.B = double[config.B_dims[0]][config.B_dims[1]];
+	config.C = double[config.A_dims[0]][config.A_dims[1]];
 
 	/* Setup sizes of local matrix tiles */
+	config.local_size = config.matrix_size / sqrt(config.world_size);
+	config.local_dims[0] = config.local_size;
+	config.local_dims[1] = config.local_size;
 
 	/* Create subarray datatype for local matrix tile */
-
+	config.A_tmp = double[config.local_dims[0]][config.local_dims[1]];
 	/* Create data array to load actual block matrix data */
-
+	double[config.local_dims[0] + config.local_dims[1]] dataTmp;
 	/* Set fileview of process to respective matrix block */
-
+	MPI_Offset offset = 2 * sizeof(int);
+	MPI_File_set_view(config.A_file, offset, MPI_DOUBLE, MPI_DOUBLE, &dataTmp, MPI_INFO_NULL);
+	printf("%d\n", dataTmp[0][0]);
 	/* Collective read blocks from files */
 
 	/* Close data source files */
