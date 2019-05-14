@@ -134,8 +134,8 @@ void init_matmul(char *A_file, char *B_file, char *outfile)
 	MPI_Comm_rank(config.row_comm, &config.row_rank);
 	MPI_Comm_size(config.row_comm, &config.row_size);
 	
-	MPI_Comm_rank(config.coll_comm, &config.coll_rank);
-	MPI_Comm_size(config.coll_comm, &config.coll_size);
+	MPI_Comm_rank(config.col_comm, &config.col_rank);
+	MPI_Comm_size(config.col_comm, &config.col_size);
 
 	/* Setup sizes of full matrices */
 	config.A = malloc(sizeof(double) * (config.A_dims[0] * config.A_dims[1]));
