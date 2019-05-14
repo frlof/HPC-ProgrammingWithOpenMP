@@ -51,7 +51,7 @@ void init_matmul(char *A_file, char *B_file, char *outfile)
 		printf("%d\n", coord[0]);
 		printf("%d\n", coord[1]);
 	}
-	int temp[2] = MPI_Comm_rank(config.grid_comm, &config.grid_rank)
+	int temp[2] = MPI_Comm_rank(config.grid_comm, &config.grid_rank);
 	if(config.grid_rank == [7][7]){
 		printf("apa");
 	}
