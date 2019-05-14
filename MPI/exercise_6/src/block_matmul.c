@@ -97,9 +97,9 @@ void init_matmul(char *A_file, char *B_file, char *outfile)
 	config.local_dims[1] = config.local_size;
 
 	/* Create subarray datatype for local matrix tile */
-	config.A_tmp = malloc(sizeof(double) * (config.locals_dims[0] * config.local_dims[1]));
+	config.A_tmp = malloc(sizeof(double) * (config.local_dims[0] * config.local_dims[1]));
 	/* Create data array to load actual block matrix data */
-	double[config.local_dims[0] + config.local_dims[1]] dataTmp;
+	double dataTmp[config.local_dims[0] + config.local_dims[1]];
 	/* Set fileview of process to respective matrix block */
 	MPI_Offset offset = 2 * sizeof(int);
 	MPI_File_set_view(config.A_file, offset, MPI_DOUBLE, MPI_DOUBLE, &dataTmp, MPI_INFO_NULL);
