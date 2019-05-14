@@ -167,8 +167,8 @@ void init_matmul(char *A_file, char *B_file, char *outfile)
 	/* Set fileview of process to respective matrix block */
 
 	MPI_Offset offset = 2 * sizeof(int);
-	MPI_File_set_view(config.A_file, offset , toTile, MPI_DOUBLE , "native", MPI_INFO_NULL);
-	MPI_File_set_view(config.B_file, offset , toTile, MPI_DOUBLE , "native", MPI_INFO_NULL);
+	MPI_File_set_view(config.A_file, offset , config.block, MPI_DOUBLE , "native", MPI_INFO_NULL);
+	MPI_File_set_view(config.B_file, offset , config.block, MPI_DOUBLE , "native", MPI_INFO_NULL);
 		
 	/* Collective read blocks from files */
 	
