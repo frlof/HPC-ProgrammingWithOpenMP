@@ -271,7 +271,7 @@ void compute_fox()
 		//MPI_Cart_shift(config.col_comm, 0, 1, &source, &dest);
 		//MPI_Sendrecv_replace(config.B, tileSize, MPI_DOUBLE, dest, config.col_rank, source, source, config.col_comm, MPI_STATUS_IGNORE);
 		//MPI_Cart_shift(config.row_comm, 0, 1, &source, &dest);
-		MPI_Sendrecv_replace(config.B, tileSize, MPI_DOUBLE, dest, 0, source, 0, config.row_comm, MPI_STATUS_IGNORE);
+		MPI_Sendrecv_replace(config.B, tileSize, MPI_DOUBLE, dest, 0, source, 0, config.col_comm, MPI_STATUS_IGNORE);
 
 		
 
