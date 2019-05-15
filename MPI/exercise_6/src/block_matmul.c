@@ -254,7 +254,7 @@ void compute_fox()
 						double val2 = config.B[indexB];
 						double val3 = val1 * val2;;
 
-						printf("val1: %f   val2:%f   val3:%f\n", val1, val2, val3);
+						//printf("val1: %f   val2:%f   val3:%f\n", val1, val2, val3);
 						
 						config.C[indexC] += config.A_tmp[indexA] * config.B[indexB];
 					}
