@@ -213,6 +213,7 @@ void compute_fox()
 		MPI_Comm_rank(config.col_comm, &colID);
 		MPI_Comm_size(config.row_comm, &inRow);
 		
+		rootX = (config.row_rank+i)%config.row_size;
 		double **AMul;
 		if(rootX == config.col_rank){
 			AMul = &config.A;
@@ -272,7 +273,7 @@ void compute_fox()
 		//MPI_Cart_shift(config.row_comm, 0, 1, &source, &dest);
 		MPI_Sendrecv_replace(config.B, tileSize, MPI_DOUBLE, dest, 0, source, 0, config.row_comm, MPI_STATUS_IGNORE);
 
-		rootX = (rootX+1)%config.row_size;
+		
 
 	}
 	/*
