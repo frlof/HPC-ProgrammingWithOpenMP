@@ -152,7 +152,7 @@ void cleanup_matmul()
 	if(config.world_rank == 0){
 		int jump = sizeof(double) * 1000;
 		double temp;
-		MPI_File_read_at(config.C_file, jump, &temp, 1, MPI_DOUBLE, MPI_STATUS_IGNORE);
+		MPI_File_read_at(config.C_file, 0, &temp, 1, MPI_DOUBLE, MPI_STATUS_IGNORE);
 		printf("%f", temp);
 		printf("%d", config.A_dims[1]);
 	}
