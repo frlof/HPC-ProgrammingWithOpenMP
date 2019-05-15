@@ -34,29 +34,6 @@ struct Config {
 };
 struct Config config;
 
-void init_matmuls(char *A_file, char *B_file, char *outfile)
-{
-	MPI_Comm_rank(MPI_COMM_WORLD, &config.world_rank);
-	MPI_Comm_size(MPI_COMM_WORLD, &config.world_size);
-	config.outfile = outfile;
-
-	int wrap[2];
-	wrap[0] = wrap[1] = 1;
-	config.dim[0] = 8;
-	config.dim[1] = 8;
-	MPI_Cart_create(MPI_COMM_WORLD, 2, config.dim, wrap, 1, &config.grid_comm);
-	//MPI_Comm_rank(config.grid_comm, &config.grid_rank);
-	config.coords[0] = 0;
-	config.coords[1] = 1;
-	MPI_Cart_sub(config.grid_comm, config.coords, &config.row_comm);
-	MPI_Comm_rank(config.row_comm, &config.row_rank);
-	config.coords[0] = 1;
-	config.coords[1] = 0;
-	MPI_Cart_sub(config.grid_comm, config.coords, &config.col_comm);
-	MPI_Comm_rank(config.col_comm, &config.col_rank);
-	//MPI_Bcast(1, 1, MPI_INT, )
-}
-
 void init_matmul(char *A_file, char *B_file, char *outfile)
 {
 	MPI_Comm_rank(MPI_COMM_WORLD, &config.world_rank);
@@ -100,23 +77,23 @@ void init_matmul(char *A_file, char *B_file, char *outfile)
 	MPI_Cart_create(MPI_COMM_WORLD, 2, config.dim, wrap, 1, &config.grid_comm);
 
 	/* Sub div cart communicator to N row communicator */
-	config.coords[0] = 0;
-	config.coords[1] = 1;
-	MPI_Cart_sub(config.grid_comm, config.coords, &config.row_comm);
+	//config.coords[0] = 0;//original
+	//config.coords[1] = 1;//original
+	//MPI_Cart_sub(config.grid_comm, config.coords, &config.row_comm);
+	int klax[2] = {0,1};
+	MPI_Cart_sub(config.grid_comm, klax, &config.row_comm);
 	/* Sub div cart communicator to N col communicator */
-	config.coords[0] = 1;
-	config.coords[1] = 0;
-	MPI_Cart_sub(config.grid_comm, config.coords, &config.col_comm);
+	//config.coords[0] = 1;//original
+	//config.coords[1] = 0;//original
+	//MPI_Cart_sub(config.grid_comm, config.coords, &config.col_comm);
+	int krax[2] = {1,0};
+	MPI_Cart_sub(config.grid_comm, krax, &config.col_comm);
 
 	MPI_Comm_rank(config.row_comm, &config.row_rank);
 	MPI_Comm_size(config.row_comm, &config.row_size);
 	
 	MPI_Comm_rank(config.col_comm, &config.col_rank);
 	MPI_Comm_size(config.col_comm, &config.col_size);
-	
-	if(config.world_rank == 0 || config.world_rank == 1 || config.world_rank == 2){
-		printf("%d,%d,%d\n", config.row_rank, config.col_rank, config.world_rank);
-	}
 
 	/* Setup sizes of full matrices */
 
@@ -191,34 +168,50 @@ void compute_fox()
 	
 	int tileSize = config.local_size * config.local_size;
 
-	int rootX = config.row_rank;
+	int rootX = config.col_rank;
 	//int rootY = config.row_rank;
 	int i;
 	for (i = 0; i < config.dim[0]; i++) {
 
 		int rowID;
+		int colID;
 		int inRow;
 
 		MPI_Comm_rank(config.row_comm, &rowID);
+		MPI_Comm_rank(config.col_comm, &colID);
 		MPI_Comm_size(config.row_comm, &inRow);
 
 		//printf("palsternacka   %d    %d\n", config.row_rank, rowID);
 
 
 		//printf("localSize: %d\n", config.local_size);
-		if(config.world_rank == 0){
-			printf("[%d]   ID:%d   N:%d\n", config.world_rank, rowID, inRow);
-		}
+		//if(config.world_rank == 0){
+			//printf("[%d]   ID:%d   N:%d\n", config.world_rank, rowID, inRow);
+		//}
 		
+		//stuck
+		//upper: [0]   RowID:0   ColID:0
+		//lower: [1]   RowID:1   ColID:0
+		//lower: [2]   RowID:0   ColID:1
+		//upper: [3]   RowID:1   ColID:1
 
+		//upper: [0]   RowID:0   ColID:0
+		// lower: [1]   RowID:0   ColID:1
+		// lower: [2]   RowID:1   ColID:0
+		// upper: [3]   RowID:1   ColID:1
+		
+		
 		double **AMul;
-		if(rootX == config.col_rank){
+		if(rootX == config.row_rank){
 			AMul = &config.A;
 			//printf("[%d] pointer: %p   %p\n", config.world_rank,*AMul, config.A);
+			printf("upper: [%d]   RowID:%d   ColID:%d   RootX:%d\n", config.world_rank, rowID, colID, rootX);
 		}else{
 			AMul = &config.A_tmp;
 			//printf("[%d] pointer: %p   %p\n", config.world_rank,*AMul, config.A_tmp);
+			printf("lower: [%d]   RowID:%d   ColID:%d   RootX:%d\n", config.world_rank, rowID, colID, rootX);
 		}
+		
 		//printf("%p   %p\n", *AMul, config.A);
 		
 		MPI_Bcast(*AMul, tileSize, MPI_DOUBLE, rootX, config.row_comm);
@@ -229,10 +222,6 @@ void compute_fox()
 			printf("lower: [%d]   ID:%d   N:%d\n", config.world_rank, rowID, inRow);
 			MPI_Bcast(config.A_tmp, tileSize, MPI_DOUBLE, rootX, config.row_comm);
 		}*/
-
-		if(config.world_rank == 0){
-			printf("[%d]   ID:%d   N:%d\n", config.world_rank, rowID, inRow);
-		}
 
 		if(rootX == config.col_rank){
 			/*
@@ -279,23 +268,14 @@ void compute_fox()
 		//MPI_Isend(config.B, tileSize, MPI_DOUBLE, 0, config.world_rank, MPI_COMM_WORLD, &pelle);
 
 		//MPI_recv(config.B, tileSize, MPI_INT, i, i, MPI_COMM_WORLD, );
-		if(config.world_rank == 0){
-			printf("[%d]   ID:%d   N:%d\n", config.world_rank, rowID, inRow);
-		}
+
 		MPI_Cart_shift(config.col_comm, 0, 1, &source, &dest);
 
-		if(config.world_rank == 0){
-			printf("[%d]   ID:%d   N:%d\n", config.world_rank, rowID, inRow);
-		}
 
 		//MPI_Sendrecv(config.B, tileSize, MPI_DOUBLE, dest, sendtag, source, recvtag, comm, status);
 
 
 		MPI_Sendrecv_replace(config.B, tileSize, MPI_DOUBLE, dest, config.col_rank, source, source, config.col_comm, MPI_STATUS_IGNORE);
-
-		if(config.world_rank == 0){
-			printf("[%d]   ID:%d   N:%d\n", config.world_rank, rowID, inRow);
-		}
 
 		rootX = (rootX+1)%config.row_size;
 
