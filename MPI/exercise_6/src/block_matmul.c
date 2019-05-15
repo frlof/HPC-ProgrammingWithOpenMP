@@ -81,7 +81,11 @@ void init_matmul(char *A_file, char *B_file, char *outfile)
 	wrap[0] = 0;
 	wrap[1] = 1;
 	MPI_Cart_create(MPI_COMM_WORLD, 2, config.dim, wrap, 1, &config.grid_comm);
-
+	MPI_Comm_rank(config.grid_comm, &config.grid_rank);
+	int coordinates[2];
+	MPI_Cart_coords(config.grid_comm, config.grid_rank, 2, coordinates);
+	config.row_rank = coordinates[0];
+	config.col_rank = coordinates[1];
 	/* Sub div cart communicator to N row communicator */
 	config.coords[0] = 0;//original
 	config.coords[1] = 1;//original
@@ -203,7 +207,7 @@ void compute_fox()
 	source = (config.row_rank + 1) % config.row_size;
 	dest = (config.row_rank + config.row_size) % config.row_size;
 	double **AMul;
-	int rootX = config.col_rank;
+	int rootX;
 	int i;
 	for (i = 0; i < config.dim[0]; i++) {
 		rootX = (config.col_rank+i)%config.row_size;
