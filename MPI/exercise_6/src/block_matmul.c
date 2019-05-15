@@ -198,7 +198,9 @@ void compute_fox()
 	int source, dest;
 	
 	int tileSize = config.local_size * config.local_size;
-	MPI_Cart_shift(config.row_comm, 0, 1, &source, &dest);
+	//MPI_Cart_shift(config.row_comm, 0, 1, &source, &dest);
+	source = (config.row_rank + 1) % config.grid_rank;
+	dest = (config.row_rank + config.grid_rank - 1) % config.grid_rank;
 	int rootX = config.col_rank;
 	int i;
 	for (i = 0; i < config.dim[0]; i++) {
