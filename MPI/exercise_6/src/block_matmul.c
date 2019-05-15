@@ -148,7 +148,10 @@ void cleanup_matmul()
 
 	/* Collective write and close file */
 	MPI_File_write_all(config.C_file, config.A, config.local_size*config.local_size, MPI_DOUBLE,  MPI_STATUS_IGNORE);
-	//MPI_File_read_all(config.A_file, config.A, config.local_size*config.local_size,MPI_DOUBLE,  MPI_STATUS_IGNORE);
+	MPI_File_read_at(config.C_file, 0, config.A_dims, 2, MPI_INT, MPI_STATUS_IGNORE);
+	printf("%d", config.A_dims[0]);
+	printf("%d", config.A_dims[1]);
+	MPI_File_close(&config.C_file);
 	/* Cleanup */
 }
 
