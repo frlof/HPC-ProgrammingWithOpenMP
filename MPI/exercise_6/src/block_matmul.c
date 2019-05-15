@@ -1,4 +1,5 @@
 #include "block_matmul.h"
+#include <unistd.h>
 
 
 struct Config {
@@ -43,14 +44,15 @@ void init_matmul(char *A_file, char *B_file, char *outfile)
 	config.outfile = outfile;
 	
 	/* Get matrix size header */
+	MPI_File_open(MPI_COMM_SELF, A_file, MPI_MODE_RDONLY, MPI_INFO_NULL, &config.A_file);
+	MPI_File_open(MPI_COMM_SELF, B_file, MPI_MODE_RDONLY, MPI_INFO_NULL, &config.B_file);
 	if(config.world_rank == 0){	
 		//Matrix A
-		MPI_File_open(MPI_COMM_SELF, A_file, MPI_MODE_RDONLY, MPI_INFO_NULL, &config.A_file);
+		//MPI_File_open(MPI_COMM_SELF, A_file, MPI_MODE_RDONLY, MPI_INFO_NULL, &config.A_file);
 		MPI_File_read_at(config.A_file, 0, config.A_dims, 2, MPI_INT, MPI_STATUS_IGNORE);
 		//MPI_File_close(&config.A_file);
 		
 		//Matrix B
-		MPI_File_open(MPI_COMM_SELF, B_file, MPI_MODE_RDONLY, MPI_INFO_NULL, &config.B_file);
         MPI_File_read_at(config.B_file, 0, config.B_dims, 2, MPI_INT, MPI_STATUS_IGNORE);
         //MPI_File_close(&config.B_file);
 
@@ -196,7 +198,7 @@ void compute_fox()
 	int source, dest;
 	
 	int tileSize = config.local_size * config.local_size;
-
+	MPI_Cart_shift(config.row_comm, 0, 1, &source, &dest);
 	int rootX = config.col_rank;
 	int i;
 	for (i = 0; i < config.dim[0]; i++) {
@@ -220,61 +222,62 @@ void compute_fox()
 		
 		MPI_Bcast(*AMul, tileSize, MPI_DOUBLE, rootX, config.row_comm);
 
-		if(rootX == config.col_rank){
-			int a,b,c;
-			for(a=0;a<config.local_size;a++){
-				for(b=0;b<config.local_size;b++){
-					int indexC = a * config.local_size + b;
-					config.C[indexC] = 0;
-					for(c=0;c<config.local_size;c++){
-						int indexA = a * config.local_size + c;
-						int indexB = c * config.local_size + b;
-						config.C[indexC]+=config.A[indexA]*config.B[indexB];
-					}
-					//printf("snopp %f\n", config.C[indexC]);
-				}
+		//AMul = &config.A;
+
+		if(rootX == config.row_rank){
+			//AMul = &config.A;
+			if(*AMul != config.A){
+				printf("krabbslem");
 			}
-
+			printf("upper: [%d]   RowID:%d   ColID:%d   RootX:%d\n", config.world_rank, rowID, colID, rootX);
 		}else{
-			int a,b,c;
-			for(a=0;a<config.local_size;a++){
-				for(b=0;b<config.local_size;b++){
-					int indexC = a * config.local_size + b;
-					config.C[indexC] = 0;
-					for(c=0;c<config.local_size;c++){
+			//AMul = &config.A_tmp;
+			if(*AMul != config.A_tmp){
+				printf("krabbslem");
+			}
+			printf("lower: [%d]   RowID:%d   ColID:%d   RootX:%d\n", config.world_rank, rowID, colID, rootX);
+		}
+		
+		int a,b,c;
+		for(a=0;a<config.local_size;a++){
+			for(b=0;b<config.local_size;b++){
+				int indexC = a * config.local_size + b;
+				//config.C[indexC] = 0;
+				for(c=0;c<config.local_size;c++){
+					int indexA = a * config.local_size + c;
+					int indexB = c * config.local_size + b;
+					//config.C[indexC]+=config.A[indexA]*config.B[indexB];
+					config.C[indexC]+=(*AMul)[indexA]*config.B[indexB];
 
-						
-						int indexA = a * config.local_size + c;
-						int indexB = c * config.local_size + b;
-						//config.C[a][b]+=config.A_tmp[a][c]*config.B[c][b];
-						
-							//printf("laxnacke %f\n", config.A_tmp[indexA] * config.B[indexB]);
-							//printf("laxnacke %f\n", config.A_tmp[indexA]);
-						double val1 = config.A_tmp[indexA];
-						double val2 = config.B[indexB];
-						double val3 = val1 * val2;;
-
-						printf("val1: %f   val2:%f   val3:%f\n", val1, val2, val3);
-						
-						config.C[indexC] += config.A_tmp[indexA] * config.B[indexB];
-					}
-					//printf("snopp %f\n", config.C[indexC]);
+					double val1 = config.A[indexA];
+					double val2 = config.B[indexB];
+					//if(i > 0){
+					//if(rootX == config.row_rank){
+					//	printf("[%d] val1: %f   val2:%f\n", config.world_rank, val1, val2);
+					//}
+					
 				}
+				//printf("snopp %f\n", config.C[indexC]);
 			}
 		}
+		
 
-		MPI_Cart_shift(config.col_comm, 0, 1, &source, &dest);
+		//printf("kraxflax\n");
+		//sleep(10000);
 
-		MPI_Sendrecv_replace(config.B, tileSize, MPI_DOUBLE, dest, config.col_rank, source, source, config.col_comm, MPI_STATUS_IGNORE);
+		//MPI_Cart_shift(config.col_comm, 0, 1, &source, &dest);
+		//MPI_Sendrecv_replace(config.B, tileSize, MPI_DOUBLE, dest, config.col_rank, source, source, config.col_comm, MPI_STATUS_IGNORE);
+		//MPI_Cart_shift(config.row_comm, 0, 1, &source, &dest);
+		MPI_Sendrecv_replace(config.B, tileSize, MPI_DOUBLE, dest, 0, source, 0, config.row_comm, MPI_STATUS_IGNORE);
 
 		rootX = (rootX+1)%config.row_size;
 
 	}
-
+	/*
 	for(i = 0; i < tileSize; i++){
 		if(config.C[i] != 0){
-			printf("kalle %f\n", config.C[i]);
+			printf("[%d]kalle %f\n",config.world_rank, config.C[i]);
 		}
 		
-	}
+	}*/
 }
