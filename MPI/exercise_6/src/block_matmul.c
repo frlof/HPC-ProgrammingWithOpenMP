@@ -140,7 +140,7 @@ void cleanup_matmul()
 	/* Rank zero writes header specifying dim of result matrix C */
 	MPI_File_open(MPI_COMM_SELF, config.outfile, MPI_MODE_WRONLY, MPI_INFO_NULL, &config.C_file);
 	if(config.world_rank == 0){
-		MPI_File_write_at(config.C_file, 0, Config.C_dims, 2, MPI_INT, MPI_STATUS_IGNORE);
+		MPI_File_write_at(config.C_file, 0, config.C_dims, 2, MPI_INT, MPI_STATUS_IGNORE);
 	}
 	/* Set fileview of process to respective matrix block with header offset */
 	MPI_Offset offset = 2 * sizeof(int);
