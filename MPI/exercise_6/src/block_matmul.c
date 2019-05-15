@@ -106,7 +106,6 @@ void init_matmul(char *A_file, char *B_file, char *outfile)
 
 	int startOffset[2] = {config.local_size * config.row_rank,config.local_size*config.col_rank};
 
-	config.block;
 	MPI_Type_create_subarray(2, config.A_dims, config.local_dims, startOffset, MPI_ORDER_C, MPI_DOUBLE, &config.block);
 	MPI_Type_commit(&config.block);
 
