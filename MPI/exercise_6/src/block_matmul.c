@@ -201,45 +201,19 @@ void compute_fox()
 	//MPI_Cart_shift(config.row_comm, 0, 1, &source, &dest);
 	source = (config.row_rank + 1) % config.row_size;
 	dest = (config.row_rank + config.grid_rank - 1) % config.row_size;
+	double **AMul;
 	int rootX = config.col_rank;
 	int i;
 	for (i = 0; i < config.dim[0]; i++) {
-
-		int rowID;
-		int colID;
-		int inRow;
-
-		MPI_Comm_rank(config.row_comm, &rowID);
-		MPI_Comm_rank(config.col_comm, &colID);
-		MPI_Comm_size(config.row_comm, &inRow);
 		
 		rootX = (config.row_rank+i)%config.row_size;
-		double **AMul;
 		if(rootX == config.col_rank){
 			AMul = &config.A;
-			printf("upper: [%d]   RowID:%d   ColID:%d   RootX:%d\n", config.world_rank, rowID, colID, rootX);
 		}else{
 			AMul = &config.A_tmp;
-			printf("lower: [%d]   RowID:%d   ColID:%d   RootX:%d\n", config.world_rank, rowID, colID, rootX);
 		}
 		
 		MPI_Bcast(*AMul, tileSize, MPI_DOUBLE, rootX, config.row_comm);
-
-		//AMul = &config.A;
-
-		if(rootX == config.col_rank){
-			//AMul = &config.A;
-			if(*AMul != config.A){
-				printf("krabbslem");
-			}
-			printf("upper: [%d]   RowID:%d   ColID:%d   RootX:%d\n", config.world_rank, rowID, colID, rootX);
-		}else{
-			//AMul = &config.A_tmp;
-			if(*AMul != config.A_tmp){
-				printf("krabbslem");
-			}
-			printf("lower: [%d]   RowID:%d   ColID:%d   RootX:%d\n", config.world_rank, rowID, colID, rootX);
-		}
 		
 		int a,b,c;
 		for(a=0;a<config.local_size;a++){
@@ -254,33 +228,9 @@ void compute_fox()
 
 					double val1 = config.A[indexA];
 					double val2 = config.B[indexB];
-					//if(i > 0){
-					//if(rootX == config.row_rank){
-					//	printf("[%d] val1: %f   val2:%f\n", config.world_rank, val1, val2);
-					//}
-					
 				}
-				//printf("snopp %f\n", config.C[indexC]);
 			}
 		}
-		
-
-		//printf("kraxflax\n");
-		//sleep(10000);
-
-		//MPI_Cart_shift(config.col_comm, 0, 1, &source, &dest);
-		//MPI_Sendrecv_replace(config.B, tileSize, MPI_DOUBLE, dest, config.col_rank, source, source, config.col_comm, MPI_STATUS_IGNORE);
-		//MPI_Cart_shift(config.row_comm, 0, 1, &source, &dest);
 		MPI_Sendrecv_replace(config.B, tileSize, MPI_DOUBLE, dest, 0, source, 0, config.col_comm, MPI_STATUS_IGNORE);
-
-		
-
 	}
-	/*
-	for(i = 0; i < tileSize; i++){
-		if(config.C[i] != 0){
-			printf("[%d]kalle %f\n",config.world_rank, config.C[i]);
-		}
-		
-	}*/
 }
