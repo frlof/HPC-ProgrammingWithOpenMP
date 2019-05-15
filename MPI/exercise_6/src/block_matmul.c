@@ -227,7 +227,7 @@ void compute_fox()
 
 		//AMul = &config.A;
 
-		if(rootX == config.row_rank){
+		if(rootX == config.col_rank){
 			//AMul = &config.A;
 			if(*AMul != config.A){
 				printf("krabbslem");
