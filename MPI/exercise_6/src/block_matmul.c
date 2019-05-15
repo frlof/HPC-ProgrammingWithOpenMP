@@ -106,9 +106,9 @@ void init_matmul(char *A_file, char *B_file, char *outfile)
 
 	int startOffset[2] = {config.local_size * config.row_rank,config.local_size*config.col_rank};
 
-	MPI_Datatype toTile;
-	MPI_Type_create_subarray(2, config.A_dims, config.local_dims, startOffset, MPI_ORDER_C, MPI_DOUBLE, &toTile);
-	MPI_Type_commit(&toTile);
+	config.block;
+	MPI_Type_create_subarray(2, config.A_dims, config.local_dims, startOffset, MPI_ORDER_C, MPI_DOUBLE, &config.block);
+	MPI_Type_commit(&config.block);
 
 	
 	/* Create data array to load actual block matrix data */
@@ -121,8 +121,8 @@ void init_matmul(char *A_file, char *B_file, char *outfile)
 	/* Set fileview of process to respective matrix block */
 
 	MPI_Offset offset = 2 * sizeof(int);
-	MPI_File_set_view(config.A_file, offset , toTile, MPI_DOUBLE , "native", MPI_INFO_NULL);
-	MPI_File_set_view(config.B_file, offset , toTile, MPI_DOUBLE , "native", MPI_INFO_NULL);
+	MPI_File_set_view(config.A_file, offset , config.block, MPI_DOUBLE , "native", MPI_INFO_NULL);
+	MPI_File_set_view(config.B_file, offset , config.block, MPI_DOUBLE , "native", MPI_INFO_NULL);
 		
 	/* Collective read blocks from files */
 	
@@ -133,17 +133,23 @@ void init_matmul(char *A_file, char *B_file, char *outfile)
 	/* Close data source files */
 	MPI_File_close(&config.A_file);
 	MPI_File_close(&config.B_file);
-	MPI_Type_free(&toTile);
+	//MPI_Type_free(&toTile);
 }
 
 void cleanup_matmul()
 {
 	/* Rank zero writes header specifying dim of result matrix C */
-
+	MPI_File_open(MPI_COMM_SELF, config.outfile, MPI_MODE_WRONLY, MPI_INFO_NULL, &config.C_file);
+	if(config.world_rank == 0){
+		MPI_File_write_at(config.C_file, 0, Config.C_dims, 2, MPI_INT, MPI_STATUS_IGNORE);
+	}
 	/* Set fileview of process to respective matrix block with header offset */
+	MPI_Offset offset = 2 * sizeof(int);
+	MPI_File_set_view(config.A_file, offset , config.block, MPI_DOUBLE , "native", MPI_INFO_NULL);
 
 	/* Collective write and close file */
-
+	MPI_File_write_all(config.C_file, config.A, config.local_size*config.local_size, MPI_DOUBLE,  MPI_STATUS_IGNORE);
+	//MPI_File_read_all(config.A_file, config.A, config.local_size*config.local_size,MPI_DOUBLE,  MPI_STATUS_IGNORE);
 	/* Cleanup */
 }
 
