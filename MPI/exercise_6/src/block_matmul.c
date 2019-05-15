@@ -82,17 +82,17 @@ void init_matmul(char *A_file, char *B_file, char *outfile)
 	MPI_Cart_create(MPI_COMM_WORLD, 2, config.dim, wrap, 1, &config.grid_comm);
 
 	/* Sub div cart communicator to N row communicator */
-	//config.coords[0] = 0;//original
-	//config.coords[1] = 1;//original
+	config.coords[0] = 0;//original
+	config.coords[1] = 1;//original
 	//MPI_Cart_sub(config.grid_comm, config.coords, &config.row_comm);
 	int klax[2] = {0,1};
-	MPI_Cart_sub(config.grid_comm, klax, &config.row_comm);
+	MPI_Cart_sub(config.grid_comm, config.coords, &config.row_comm);
 	/* Sub div cart communicator to N col communicator */
-	//config.coords[0] = 1;//original
-	//config.coords[1] = 0;//original
+	config.coords[0] = 1;//original
+	config.coords[1] = 0;//original
 	//MPI_Cart_sub(config.grid_comm, config.coords, &config.col_comm);
 	int krax[2] = {1,0};
-	MPI_Cart_sub(config.grid_comm, krax, &config.col_comm);
+	MPI_Cart_sub(config.grid_comm, config.coords, &config.col_comm);
 
 	MPI_Comm_rank(config.row_comm, &config.row_rank);
 	MPI_Comm_size(config.row_comm, &config.row_size);
@@ -205,16 +205,13 @@ void compute_fox()
 	int rootX = config.col_rank;
 	int i;
 	for (i = 0; i < config.dim[0]; i++) {
-		
 		rootX = (config.row_rank+i)%config.row_size;
 		if(rootX == config.col_rank){
 			AMul = &config.A;
 		}else{
 			AMul = &config.A_tmp;
 		}
-		
 		MPI_Bcast(*AMul, tileSize, MPI_DOUBLE, rootX, config.row_comm);
-		
 		int a,b,c;
 		for(a=0;a<config.local_size;a++){
 			for(b=0;b<config.local_size;b++){
