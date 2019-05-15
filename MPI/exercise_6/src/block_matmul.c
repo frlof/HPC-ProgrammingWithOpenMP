@@ -66,6 +66,9 @@ void init_matmul(char *A_file, char *B_file, char *outfile)
 	MPI_Bcast(config.A_dims, 2, MPI_INT, 0, MPI_COMM_WORLD);
 	MPI_Bcast(config.B_dims, 2, MPI_INT, 0, MPI_COMM_WORLD);
 	config.matrix_size = config.A_dims[0];
+	//config.C_dims = config.A_dims;
+	config.C_dims[0] = config.A_dims[0];
+	config.C_dims[1] = config.A_dims[1];
 	
 	/* Set dim of tiles relative to the number of processes as NxN where N=sqrt(world_size) */
 	config.dim[0] = sqrt(config.world_size);
@@ -116,6 +119,14 @@ void init_matmul(char *A_file, char *B_file, char *outfile)
 	config.B = (double *)malloc(sizeof(double) * (config.local_size * config.local_size));
 	config.C = (double *)malloc(sizeof(double) * (config.local_size * config.local_size));
 
+	int i;
+	for(i = 0; i < config.local_size * config.local_size; i++){
+		config.A[i] = 0.0;
+		config.A_tmp[i] = 0.0;
+		config.B[i] = 0.0;
+		config.C[i] = 0.0;
+	}
+
 
 	/* Set fileview of process to respective matrix block */
 
@@ -137,24 +148,40 @@ void init_matmul(char *A_file, char *B_file, char *outfile)
 
 void cleanup_matmul()
 {
+
+	printf("struts\n");
+	printf("pasta: %d\n", config.C_dims[0]);
+
 	/* Rank zero writes header specifying dim of result matrix C */
-	MPI_File_open(MPI_COMM_SELF, config.outfile, MPI_MODE_WRONLY, MPI_INFO_NULL, &config.C_file);
+	MPI_File_open(MPI_COMM_SELF, config.outfile, MPI_MODE_RDWR, MPI_INFO_NULL, &config.C_file);
 	if(config.world_rank == 0){
 		MPI_File_write_at(config.C_file, 0, config.C_dims, 2, MPI_INT, MPI_STATUS_IGNORE);
+		MPI_File_read_at(config.C_file, 0, config.C_dims, 2, MPI_INT, MPI_STATUS_IGNORE);
 	}
+	printf("pirre: %d\n", config.C_dims[0]);
 	/* Set fileview of process to respective matrix block with header offset */
 	MPI_Offset offset = 2 * sizeof(int);
-	MPI_File_set_view(config.A_file, offset , config.block, MPI_DOUBLE , "native", MPI_INFO_NULL);
+	MPI_File_set_view(config.C_file, offset , config.block, MPI_DOUBLE , "native", MPI_INFO_NULL);
 
 	/* Collective write and close file */
-	MPI_File_write_all(config.C_file, config.A, config.local_size*config.local_size, MPI_DOUBLE,  MPI_STATUS_IGNORE);
+	MPI_File_write_all(config.C_file, config.C, config.local_size*config.local_size, MPI_DOUBLE,  MPI_STATUS_IGNORE);
 	
 	if(config.world_rank == 0){
-		int jump = sizeof(double) * 1000;
+		int jump = sizeof(double) * 100;
 		double temp;
-		MPI_File_read_at(config.C_file, 0, &temp, 1, MPI_DOUBLE, MPI_STATUS_IGNORE);
-		printf("%f", temp);
-		printf("%d", config.A_dims[1]);
+		MPI_File_read_at(config.C_file, jump, &temp, 1, MPI_DOUBLE, MPI_STATUS_IGNORE);
+		MPI_File_read_at(config.C_file, 0, config.C_dims, 2, MPI_INT, MPI_STATUS_IGNORE);
+		printf("temp %f\n", temp);
+		printf("c dim 1 %d\n", config.C_dims[1]);
+		MPI_File_close(&config.C_file);
+
+		MPI_File testFile;
+		MPI_File_open(MPI_COMM_SELF, config.outfile, MPI_MODE_RDWR, MPI_INFO_NULL, &testFile);
+		MPI_File_read_at(testFile, jump, &temp, 1, MPI_DOUBLE, MPI_STATUS_IGNORE);
+		MPI_File_read_at(testFile, 0, config.C_dims, 2, MPI_INT, MPI_STATUS_IGNORE);
+		printf("andra temp %f\n", temp);
+		printf("andra c dim 1 %d\n", config.C_dims[1]);
+		MPI_File_close(&testFile);
 	}
 
 	MPI_File_close(&config.C_file);
@@ -197,13 +224,14 @@ void compute_fox()
 			int a,b,c;
 			for(a=0;a<config.local_size;a++){
 				for(b=0;b<config.local_size;b++){
+					int indexC = a * config.local_size + b;
+					config.C[indexC] = 0;
 					for(c=0;c<config.local_size;c++){
-
-						int indexC = a * config.local_size + b;
 						int indexA = a * config.local_size + c;
 						int indexB = c * config.local_size + b;
 						config.C[indexC]+=config.A[indexA]*config.B[indexB];
 					}
+					//printf("snopp %f\n", config.C[indexC]);
 				}
 			}
 
@@ -219,8 +247,18 @@ void compute_fox()
 						int indexA = a * config.local_size + c;
 						int indexB = c * config.local_size + b;
 						//config.C[a][b]+=config.A_tmp[a][c]*config.B[c][b];
-						config.C[indexC]+=config.A_tmp[indexA]*config.B[indexB];
+						
+							//printf("laxnacke %f\n", config.A_tmp[indexA] * config.B[indexB]);
+							//printf("laxnacke %f\n", config.A_tmp[indexA]);
+						double val1 = config.A_tmp[indexA];
+						double val2 = config.B[indexB];
+						double val3 = val1 * val2;;
+
+						printf("val1: %f   val2:%f   val3:%f\n", val1, val2, val3);
+						
+						config.C[indexC] += config.A_tmp[indexA] * config.B[indexB];
 					}
+					//printf("snopp %f\n", config.C[indexC]);
 				}
 			}
 		}
@@ -231,5 +269,12 @@ void compute_fox()
 
 		rootX = (rootX+1)%config.row_size;
 
+	}
+
+	for(i = 0; i < tileSize; i++){
+		if(config.C[i] != 0){
+			printf("kalle %f\n", config.C[i]);
+		}
+		
 	}
 }
