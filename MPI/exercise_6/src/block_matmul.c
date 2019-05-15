@@ -112,8 +112,6 @@ void init_matmul(char *A_file, char *B_file, char *outfile)
 
 	
 	/* Create data array to load actual block matrix data */
-	//double matrixData[10*10];
-	//printf("krabba %d\n", config.local_size);
 	config.A = (double *)malloc(sizeof(double) * (config.local_size * config.local_size));
 	config.A_tmp = (double *)malloc(sizeof(double) * (config.local_size * config.local_size));
 	config.B = (double *)malloc(sizeof(double) * (config.local_size * config.local_size));
@@ -152,24 +150,13 @@ void cleanup_matmul()
 
 void compute_fox()
 {	
-	//int rowID;
-	//int inRow;
-
-	//MPI_Comm_rank(config.row_comm, &rowID);
-	//MPI_Comm_size(config.row_comm, &inRow);
-	
-	//print("[%d]   ID:%d   N:%d\n", config.world_rank, rowID, inRow);
-
-
 
 	/* Compute source and target for vertical shift of B blocks */
 	int source, dest;
-	//MPI_Cart_shift(config.col_comm, 0, 1, &source, &dest);
 	
 	int tileSize = config.local_size * config.local_size;
 
 	int rootX = config.col_rank;
-	//int rootY = config.row_rank;
 	int i;
 	for (i = 0; i < config.dim[0]; i++) {
 
@@ -180,59 +167,19 @@ void compute_fox()
 		MPI_Comm_rank(config.row_comm, &rowID);
 		MPI_Comm_rank(config.col_comm, &colID);
 		MPI_Comm_size(config.row_comm, &inRow);
-
-		//printf("palsternacka   %d    %d\n", config.row_rank, rowID);
-
-
-		//printf("localSize: %d\n", config.local_size);
-		//if(config.world_rank == 0){
-			//printf("[%d]   ID:%d   N:%d\n", config.world_rank, rowID, inRow);
-		//}
-		
-		//stuck
-		//upper: [0]   RowID:0   ColID:0
-		//lower: [1]   RowID:1   ColID:0
-		//lower: [2]   RowID:0   ColID:1
-		//upper: [3]   RowID:1   ColID:1
-
-		//upper: [0]   RowID:0   ColID:0
-		// lower: [1]   RowID:0   ColID:1
-		// lower: [2]   RowID:1   ColID:0
-		// upper: [3]   RowID:1   ColID:1
-		
 		
 		double **AMul;
 		if(rootX == config.row_rank){
 			AMul = &config.A;
-			//printf("[%d] pointer: %p   %p\n", config.world_rank,*AMul, config.A);
 			printf("upper: [%d]   RowID:%d   ColID:%d   RootX:%d\n", config.world_rank, rowID, colID, rootX);
 		}else{
 			AMul = &config.A_tmp;
-			//printf("[%d] pointer: %p   %p\n", config.world_rank,*AMul, config.A_tmp);
 			printf("lower: [%d]   RowID:%d   ColID:%d   RootX:%d\n", config.world_rank, rowID, colID, rootX);
 		}
 		
-		//printf("%p   %p\n", *AMul, config.A);
-		
 		MPI_Bcast(*AMul, tileSize, MPI_DOUBLE, rootX, config.row_comm);
-		/*if(rootX == config.col_rank){
-			printf("upper: [%d]   ID:%d   N:%d\n", config.world_rank, rowID, inRow);
-			MPI_Bcast(config.A, tileSize, MPI_DOUBLE, rootX, config.row_comm);
-		}else{
-			printf("lower: [%d]   ID:%d   N:%d\n", config.world_rank, rowID, inRow);
-			MPI_Bcast(config.A_tmp, tileSize, MPI_DOUBLE, rootX, config.row_comm);
-		}*/
 
 		if(rootX == config.col_rank){
-			/*
-			int a,b,c;
-			for(a=0;a<config.local_size;a++){
-				for(b=0;b<config.local_size;b++){
-					for(c=0;c<config.local_size;c++){
-						config.C[a][b]+=config.A[a][c]*config.B[c][b];
-					}
-				}
-			}*/
 			int a,b,c;
 			for(a=0;a<config.local_size;a++){
 				for(b=0;b<config.local_size;b++){
@@ -241,7 +188,6 @@ void compute_fox()
 						int indexC = a * config.local_size + b;
 						int indexA = a * config.local_size + c;
 						int indexB = c * config.local_size + b;
-						//config.C[a][b]+=config.A_tmp[a][c]*config.B[c][b];
 						config.C[indexC]+=config.A[indexA]*config.B[indexB];
 					}
 				}
@@ -264,35 +210,12 @@ void compute_fox()
 				}
 			}
 		}
-		//MPI_Request pelle;
-		//MPI_Isend(config.B, tileSize, MPI_DOUBLE, 0, config.world_rank, MPI_COMM_WORLD, &pelle);
-
-		//MPI_recv(config.B, tileSize, MPI_INT, i, i, MPI_COMM_WORLD, );
 
 		MPI_Cart_shift(config.col_comm, 0, 1, &source, &dest);
-
-
-		//MPI_Sendrecv(config.B, tileSize, MPI_DOUBLE, dest, sendtag, source, recvtag, comm, status);
-
 
 		MPI_Sendrecv_replace(config.B, tileSize, MPI_DOUBLE, dest, config.col_rank, source, source, config.col_comm, MPI_STATUS_IGNORE);
 
 		rootX = (rootX+1)%config.row_size;
 
-		
-
-
-
-		/* Diag + i broadcast block A horizontally and use A_tmp to preserve own local A */
-	//	int broad = 0;
-
-		/*if(i == config.row_coll && i == config.row_rank){
-
-		}
-		MPI_Bcast(config.A, 2, MPI_INT, broad, config.row_comm);*/
-		/* dgemm with blocks */
-		
-		/* Shfting block B upwards and receive from process below */
-		//MPI_Cart_shift(config.col_comm, 0, 1, &source, &dest);
 	}
 }
