@@ -1,5 +1,5 @@
 #include "block_matmul.h"
-
+#include <math.h>
 
 struct Config {
 	/* MPI Files */
@@ -200,7 +200,7 @@ void compute_fox()
 	int rootX = config.col_rank;
 	int i;
 	for (i = 0; i < config.dim[0]; i++) {
-
+		rootX = (config.col_rank+i)%config.row_size;
 		int rowID;
 		int colID;
 		int inRow;
@@ -263,11 +263,11 @@ void compute_fox()
 			}
 		}
 
-		MPI_Cart_shift(config.col_comm, 0, 1, &source, &dest);
+		MPI_Cart_shift(config.row_comm, 0, 1, &source, &dest);
 
 		MPI_Sendrecv_replace(config.B, tileSize, MPI_DOUBLE, dest, config.col_rank, source, source, config.col_comm, MPI_STATUS_IGNORE);
 
-		rootX = (rootX+1)%config.row_size;
+		//rootX = (rootX+1)%config.row_size;
 
 	}
 
