@@ -153,7 +153,7 @@ void cleanup_matmul()
 		int jump = sizeof(double) * 1000;
 		double temp;
 		MPI_File_read_at(config.C_file, jump, temp, 1, MPI_DOUBLE, MPI_STATUS_IGNORE);
-		printf("%d", temp);
+		printf("%f", temp);
 		printf("%d", config.A_dims[1]);
 	}
 
