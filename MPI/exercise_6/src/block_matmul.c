@@ -78,7 +78,8 @@ void init_matmul(char *A_file, char *B_file, char *outfile)
 
 	/* Create Cart communicator for NxN processes */
 	int wrap[2];
-	wrap[0] = wrap[1] = 1;
+	wrap[0] = 0;
+	wrap[1] = 1;
 	MPI_Cart_create(MPI_COMM_WORLD, 2, config.dim, wrap, 1, &config.grid_comm);
 
 	/* Sub div cart communicator to N row communicator */
