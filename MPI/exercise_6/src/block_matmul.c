@@ -201,12 +201,12 @@ void compute_fox()
 	int tileSize = config.local_size * config.local_size;
 	//MPI_Cart_shift(config.row_comm, 0, 1, &source, &dest);
 	source = (config.row_rank + 1) % config.row_size;
-	dest = (config.row_rank + config.grid_rank - 1) % config.row_size;
+	dest = (config.row_rank + config.row_size) % config.row_size;
 	double **AMul;
 	int rootX = config.col_rank;
 	int i;
 	for (i = 0; i < config.dim[0]; i++) {
-		rootX = (config.row_rank+i)%config.row_size;
+		rootX = (config.col_rank+i)%config.row_size;
 		if(rootX == config.col_rank){
 			AMul = &config.A;
 		}else{
