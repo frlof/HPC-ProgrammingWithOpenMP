@@ -199,8 +199,8 @@ void compute_fox()
 	
 	int tileSize = config.local_size * config.local_size;
 	//MPI_Cart_shift(config.row_comm, 0, 1, &source, &dest);
-	source = (config.row_rank + 1) % config.grid_rank;
-	dest = (config.row_rank + config.grid_rank - 1) % config.grid_rank;
+	source = (config.row_rank + 1) % config.row_size;
+	dest = (config.row_rank + config.grid_rank - 1) % config.row_size;
 	int rootX = config.col_rank;
 	int i;
 	for (i = 0; i < config.dim[0]; i++) {
@@ -214,7 +214,7 @@ void compute_fox()
 		MPI_Comm_size(config.row_comm, &inRow);
 		
 		double **AMul;
-		if(rootX == config.row_rank){
+		if(rootX == config.col_rank){
 			AMul = &config.A;
 			printf("upper: [%d]   RowID:%d   ColID:%d   RootX:%d\n", config.world_rank, rowID, colID, rootX);
 		}else{
