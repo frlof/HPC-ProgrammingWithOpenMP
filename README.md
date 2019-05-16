@@ -8,7 +8,7 @@ This repository repository contains assignment `Programming with OpenMP` and `MP
 
 ## MPI
 
-All the files for this assignment is in the `MPI` folder.
+All the files for this assignment are in the `MPI` folder.
 
 ### Build
 
@@ -30,15 +30,18 @@ Instructions for running the code on `Beskow`.
 
 2. *Run the code:*
    1. **make** to comile the code  
-      *NOTE: it is important to be in the exercise_x directory when running this command*
+      *NOTE: it is important to be in the exercise_x directory when running this command*  
       *Example: `make`*
    2. **aprun** to run the code  
-      *NOTE: flag `n` specifies the number of threads, flag `N` specifies the number of cores*
+      *NOTE: flag `n` specifies the number of threads, flag `N` specifies the number of cores*  
       *Example: `aprun -n 64 -N 32 DirectoryToBinary`*
 
 **NOTE: Every program needs its specified input to run properly**
 
-### Results
+### Exercise 6
+`verify.c` in the `dat` folder is used to check whether the solution is correct.
+
+#### Results
 
 |      |      |      |      |      |
 | ---- | ---- | ---- | ---- | ---- |
