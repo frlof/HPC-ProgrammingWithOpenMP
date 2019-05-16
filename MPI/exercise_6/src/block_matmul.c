@@ -148,9 +148,9 @@ void init_matmul(char *A_file, char *B_file, char *outfile)
 
 	/* Set fileview of process to respective matrix block */
 
-	MPI_Offset offset = 2 * sizeof(int) + config.world_rank * config.local_size * config.local_size * sizeof(double);
+	MPI_Offset offset = 2 * sizeof(int);
 
-	offset = (config.world_rank % config.col_size) * config.local_size + config.row_rank * config.local_size*config.local_size;
+	offset += ((config.world_rank % config.col_size) * config.local_size + config.col_size * config.col_rank * config.local_size*config.local_size) * sizeof(double);
 	MPI_File_set_view(config.A_file, offset , config.block, MPI_DOUBLE , "native", MPI_INFO_NULL);
 	MPI_File_set_view(config.B_file, offset , config.block, MPI_DOUBLE , "native", MPI_INFO_NULL);
 		
