@@ -282,8 +282,8 @@ void compute_fox()
 		}
 		
 
-		printf("kraxflax\n");
-		sleep(5);
+		//printf("kraxflax\n");
+		//sleep(5);
 
 		//MPI_Cart_shift(config.col_comm, 0, 1, &source, &dest);
 		//MPI_Sendrecv_replace(config.B, tileSize, MPI_DOUBLE, dest, config.col_rank, source, source, config.col_comm, MPI_STATUS_IGNORE);
