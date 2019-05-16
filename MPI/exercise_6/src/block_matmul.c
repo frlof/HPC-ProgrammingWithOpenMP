@@ -151,16 +151,12 @@ void init_matmul(char *A_file, char *B_file, char *outfile)
 void cleanup_matmul()
 {
 
-	printf("struts\n");
-	printf("pasta: %d\n", config.C_dims[0]);
-
 	/* Rank zero writes header specifying dim of result matrix C */
 	MPI_File_open(MPI_COMM_SELF, config.outfile, MPI_MODE_RDWR, MPI_INFO_NULL, &config.C_file);
 	if(config.world_rank == 0){
 		MPI_File_write_at(config.C_file, 0, config.C_dims, 2, MPI_INT, MPI_STATUS_IGNORE);
 		MPI_File_read_at(config.C_file, 0, config.C_dims, 2, MPI_INT, MPI_STATUS_IGNORE);
 	}
-	printf("pirre: %d\n", config.C_dims[0]);
 	/* Set fileview of process to respective matrix block with header offset */
 	MPI_Offset offset = 2 * sizeof(int);
 	MPI_File_set_view(config.C_file, offset , config.block, MPI_DOUBLE , "native", MPI_INFO_NULL);
@@ -173,16 +169,12 @@ void cleanup_matmul()
 		double temp;
 		MPI_File_read_at(config.C_file, jump, &temp, 1, MPI_DOUBLE, MPI_STATUS_IGNORE);
 		MPI_File_read_at(config.C_file, 0, config.C_dims, 2, MPI_INT, MPI_STATUS_IGNORE);
-		printf("temp %f\n", temp);
-		printf("c dim 1 %d\n", config.C_dims[1]);
 		MPI_File_close(&config.C_file);
 
 		MPI_File testFile;
 		MPI_File_open(MPI_COMM_SELF, config.outfile, MPI_MODE_RDWR, MPI_INFO_NULL, &testFile);
 		MPI_File_read_at(testFile, jump, &temp, 1, MPI_DOUBLE, MPI_STATUS_IGNORE);
 		MPI_File_read_at(testFile, 0, config.C_dims, 2, MPI_INT, MPI_STATUS_IGNORE);
-		printf("andra temp %f\n", temp);
-		printf("andra c dim 1 %d\n", config.C_dims[1]);
 		MPI_File_close(&testFile);
 	}
 
@@ -214,30 +206,15 @@ void compute_fox()
 		double **AMul;
 		if(rootX == config.row_rank){
 			AMul = &config.A;
-			printf("upper: [%d]   RowID:%d   ColID:%d   RootX:%d\n", config.world_rank, rowID, colID, rootX);
+		//	printf("upper: [%d]   RowID:%d   ColID:%d   RootX:%d\n", config.world_rank, rowID, colID, rootX);
 		}else{
 			AMul = &config.A_tmp;
-			printf("lower: [%d]   RowID:%d   ColID:%d   RootX:%d\n", config.world_rank, rowID, colID, rootX);
+		//	printf("lower: [%d]   RowID:%d   ColID:%d   RootX:%d\n", config.world_rank, rowID, colID, rootX);
 		}
 		
 		MPI_Bcast(*AMul, tileSize, MPI_DOUBLE, rootX, config.row_comm);
 
 		//AMul = &config.A;
-
-		if(rootX == config.row_rank){
-			//AMul = &config.A;
-			if(*AMul != config.A){
-				printf("krabbslem");
-			}
-			printf("upper: [%d]   RowID:%d   ColID:%d   RootX:%d\n", config.world_rank, rowID, colID, rootX);
-		}else{
-			//AMul = &config.A_tmp;
-			if(*AMul != config.A_tmp){
-				printf("krabbslem");
-			}
-			printf("lower: [%d]   RowID:%d   ColID:%d   RootX:%d\n", config.world_rank, rowID, colID, rootX);
-		}
-		
 		int a,b,c;
 		for(a=0;a<config.local_size;a++){
 			for(b=0;b<config.local_size;b++){
