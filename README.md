@@ -43,4 +43,4 @@ Instructions for running the code on `Beskow`.
 
 #### Results
 
-![Plot](https://gyazo.com/fcccd00053e14ed90ff22409bb7f148b) 
+![Plot](https://i.gyazo.com/fcccd00053e14ed90ff22409bb7f148b.png) 
