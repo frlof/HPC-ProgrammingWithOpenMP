@@ -48,20 +48,7 @@ void init_matmul(char *A_file, char *B_file, char *outfile)
 	MPI_File_open(MPI_COMM_SELF, A_file, MPI_MODE_RDONLY, MPI_INFO_NULL, &config.A_file);
 	MPI_File_open(MPI_COMM_SELF, B_file, MPI_MODE_RDONLY, MPI_INFO_NULL, &config.B_file);
 	if(config.world_rank == 0){
-		MPI_Offset tempoffset = 2 * sizeof(int);
-		double temp[100];
-		MPI_File_read_at(config.A_file, tempoffset, &temp, 100, MPI_DOUBLE, MPI_STATUS_IGNORE);
-		int i,j;
-		printf("\n");
-		printf("-----FULL MATRIX-----\n");
-		for(i = 0; i < 10; i++){
-			for(j = 0; j < 10; j++){
-				printf("%f  ", temp[i*10+j]);
-			}
-			printf("\n");
-		}
-		printf("-----FULL MATRIX-----\n");
-		printf("\n");
+		
 		//Matrix A
 		//MPI_File_open(MPI_COMM_SELF, A_file, MPI_MODE_RDONLY, MPI_INFO_NULL, &config.A_file);
 		MPI_File_read_at(config.A_file, 0, config.A_dims, 2, MPI_INT, MPI_STATUS_IGNORE);
@@ -77,6 +64,21 @@ void init_matmul(char *A_file, char *B_file, char *outfile)
 			MPI_Finalize();
 			exit(1);
 		}
+
+		MPI_Offset tempoffset = 2 * sizeof(int);
+		double temp[config.A_dims[0] * config.A_dims[0]];
+		MPI_File_read_at(config.A_file, tempoffset, &temp, config.A_dims[0]*config.A_dims[0], MPI_DOUBLE, MPI_STATUS_IGNORE);
+		int i,j;
+		printf("\n");
+		printf("-----FULL MATRIX-----\n");
+		for(i = 0; i < config.A_dims[0]; i++){
+			for(j = 0; j < config.A_dims[0]; j++){
+				printf("%f  ", temp[i*config.A_dims[0]+j]);
+			}
+			printf("\n");
+		}
+		printf("-----FULL MATRIX-----\n");
+		printf("\n");
 		
 	}
 	/* Broadcast global matrix sizes */
@@ -125,7 +127,9 @@ void init_matmul(char *A_file, char *B_file, char *outfile)
 
 	/* Create subarray datatype for local matrix tile */
 
-	int startOffset[2] = {config.local_size * config.row_rank,config.local_size*config.col_rank};
+	int startOffset[2] = {config.local_size*config.col_rank, config.local_size * config.row_rank};
+	//startOffset[0] = 5;
+	//startOffset[1] = 5;
 	//printf("kallestropp %d %d %d %d\n", config.A_dims[0], config.A_dims[1], config.local_dims[0], config.local_dims[1]);
 	MPI_Type_create_subarray(2, config.A_dims, config.local_dims, startOffset, MPI_ORDER_C, MPI_DOUBLE, &config.block);
 	MPI_Type_commit(&config.block);
@@ -150,12 +154,13 @@ void init_matmul(char *A_file, char *B_file, char *outfile)
 
 	MPI_Offset offset = 2 * sizeof(int);
 
-	offset += ((config.world_rank % config.col_size) * config.local_size + config.col_size * config.col_rank * config.local_size*config.local_size) * sizeof(double);
-	MPI_File_set_view(config.A_file, offset , config.block, MPI_DOUBLE , "native", MPI_INFO_NULL);
+	//offset += ((config.world_rank % config.col_size) * config.local_size + config.col_size * config.col_rank * config.local_size*config.local_size) * sizeof(double);
+	//MPI_File_set_view(config.A_file, offset , config.block, MPI_DOUBLE , "native", MPI_INFO_NULL);
+	MPI_File_set_view(config.A_file, offset , MPI_DOUBLE, config.block , "native", MPI_INFO_NULL);
 	MPI_File_set_view(config.B_file, offset , config.block, MPI_DOUBLE , "native", MPI_INFO_NULL);
 		
 	/* Collective read blocks from files */
-	int test = 100;
+	int test = config.local_size*config.local_size;
 	MPI_File_read_all(config.A_file, config.A, test , MPI_DOUBLE,  MPI_STATUS_IGNORE);
 	MPI_File_read_all(config.B_file, config.B, config.local_size*config.local_size,MPI_DOUBLE,  MPI_STATUS_IGNORE);
 
@@ -172,9 +177,9 @@ void init_matmul(char *A_file, char *B_file, char *outfile)
 	printf("\n");
 	printf("[%d]\n]", config.world_rank);
 	printf("-----Tile-----\n");
-	for(i = 0; i < 5; i++){
-		for(j = 0; j < 5; j++){
-			printf("%f  ", config.A[i*10+j]);
+	for(i = 0; i < config.local_size; i++){
+		for(j = 0; j < config.local_size; j++){
+			printf("%f  ", config.A[i*config.local_size+j]);
 		}
 		printf("\n");
 	}
