@@ -68,6 +68,7 @@ void init_matmul(char *A_file, char *B_file, char *outfile)
 		MPI_Offset tempoffset = 2 * sizeof(int);
 		double temp[config.A_dims[0] * config.A_dims[0]];
 		MPI_File_read_at(config.A_file, tempoffset, &temp, config.A_dims[0]*config.A_dims[0], MPI_DOUBLE, MPI_STATUS_IGNORE);
+		/*
 		int i,j;
 		printf("\n");
 		printf("-----FULL MATRIX-----\n");
@@ -78,7 +79,7 @@ void init_matmul(char *A_file, char *B_file, char *outfile)
 			printf("\n");
 		}
 		printf("-----FULL MATRIX-----\n");
-		printf("\n");
+		printf("\n");*/
 		
 	}
 	/* Broadcast global matrix sizes */
@@ -157,7 +158,7 @@ void init_matmul(char *A_file, char *B_file, char *outfile)
 	//offset += ((config.world_rank % config.col_size) * config.local_size + config.col_size * config.col_rank * config.local_size*config.local_size) * sizeof(double);
 	//MPI_File_set_view(config.A_file, offset , config.block, MPI_DOUBLE , "native", MPI_INFO_NULL);
 	MPI_File_set_view(config.A_file, offset , MPI_DOUBLE, config.block , "native", MPI_INFO_NULL);
-	MPI_File_set_view(config.B_file, offset , config.block, MPI_DOUBLE , "native", MPI_INFO_NULL);
+	MPI_File_set_view(config.B_file, offset , MPI_DOUBLE, config.block , "native", MPI_INFO_NULL);
 		
 	/* Collective read blocks from files */
 	int test = config.local_size*config.local_size;
@@ -172,6 +173,7 @@ void init_matmul(char *A_file, char *B_file, char *outfile)
 	//time_t t;
 	//srand((unsigned) time(&t));
 	//sleep((int)(rand()*3));
+	/*
 	sleep(config.world_rank);
 	int j;
 	printf("\n");
@@ -184,7 +186,7 @@ void init_matmul(char *A_file, char *B_file, char *outfile)
 		printf("\n");
 	}
 	printf("-----Tile-----\n");
-	printf("\n");
+	printf("\n");*/
 }
 
 void cleanup_matmul()
@@ -202,7 +204,8 @@ void cleanup_matmul()
 	printf("pirre: %d\n", config.C_dims[0]);
 	/* Set fileview of process to respective matrix block with header offset */
 	MPI_Offset offset = 2 * sizeof(int);
-	MPI_File_set_view(config.C_file, offset , config.block, MPI_DOUBLE , "native", MPI_INFO_NULL);
+	//MPI_File_set_view(config.C_file, offset , config.block, MPI_DOUBLE , "native", MPI_INFO_NULL);
+	MPI_File_set_view(config.C_file, offset , MPI_DOUBLE, config.block , "native", MPI_INFO_NULL);
 
 	/* Collective write and close file */
 	MPI_File_write_all(config.C_file, config.C, config.local_size*config.local_size, MPI_DOUBLE,  MPI_STATUS_IGNORE);
@@ -301,11 +304,11 @@ void compute_fox()
 		rootX = (rootX+1)%config.row_size;
 
 	}
-	
+	/*
 	for(i = 0; i < tileSize; i++){
 		if(config.C[i] != 0){
 			printf("[%d]kalle %f\n",config.world_rank, config.C[i]);
 		}
 		
-	}
+	}*/
 }
