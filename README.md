@@ -2,7 +2,7 @@
 
 This repository repository contains assignment `Programming with OpenMP` and `MPI Programming` from the course *DD2356* at *KTH*.
 
-**Group: **3
+**Group:** 3
 
 **Group Members:** Fredrik Löf, Victor Carle
 
@@ -19,7 +19,7 @@ Instructions for running the code on `Beskow`.
       *Example: `kinit --forward name@NADA.KTH.SE`*
    2. **ssh** into beskow
       *Example: `ssh frlof@beskow.pdc.kth.se`*
-   3. **salloc** to allocate node  
+   3. **salloc** to allocate node
       *Example: `salloc -t 1:00:00 -A edu19.DD2356 --nodes=2`*
    4. **module  swap** to change compiler to gnu 
       *Example: `module  swap  PrgEnv-cray  PrgEnv-gnu`*
@@ -33,8 +33,8 @@ Instructions for running the code on `Beskow`.
       *NOTE: it is important to be in the exercise_x directory when running this command*
       *Example: `make`*
    2. **aprun** to run the code
-      *NOTE: flag `n` specifies the number of threads, flag `N` specifies the number of cores**
-      **Example: `aprun -n 64 -N 32 DirectoryToBinary`*
+      *NOTE: flag `n` specifies the number of threads, flag `N` specifies the number of cores*
+      *Example: `aprun -n 64 -N 32 DirectoryToBinary`*
 
 **NOTE: Every program needs its specified input to run properly**
 
