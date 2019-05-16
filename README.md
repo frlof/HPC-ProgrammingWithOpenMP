@@ -1,6 +1,6 @@
 # High Performance Computing
 
-This repository repository contains assignment `Programming with OpenMP` and `MPI Programming` from the course *DD2356* at *KTH*.
+This repository contains assignment `Programming with OpenMP` and `MPI Programming` from the course *DD2356* at *KTH*.
 
 **Group:** 3
 
