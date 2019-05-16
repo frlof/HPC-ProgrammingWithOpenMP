@@ -16,9 +16,9 @@ Instructions for running the code on `Beskow`.
 
 1. *Start by setting up the environment:*
    1. **Kinit** to get ssh key to beskow  
-      *Example: `kinit --forward name@NADA.KTH.SE`*
+      *Example: `kinit --forward username@NADA.KTH.SE`*
    2. **ssh** into beskow  
-      *Example: `ssh frlof@beskow.pdc.kth.se`*
+      *Example: `ssh username@beskow.pdc.kth.se`*
    3. **salloc** to allocate node  
       *Example: `salloc -t 1:00:00 -A edu19.DD2356 --nodes=2`*
    4. **module  swap** to change compiler to gnu  
