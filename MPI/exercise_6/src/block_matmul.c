@@ -68,7 +68,7 @@ void init_matmul(char *A_file, char *B_file, char *outfile)
 		MPI_Offset tempoffset = 2 * sizeof(int);
 		double temp[config.A_dims[0] * config.A_dims[0]];
 		MPI_File_read_at(config.A_file, tempoffset, &temp, config.A_dims[0]*config.A_dims[0], MPI_DOUBLE, MPI_STATUS_IGNORE);
-		
+		/*
 		int i,j;
 		printf("\n");
 		printf("-----FULL MATRIX-----\n");
@@ -79,7 +79,7 @@ void init_matmul(char *A_file, char *B_file, char *outfile)
 			printf("\n");
 		}
 		printf("-----FULL MATRIX-----\n");
-		printf("\n");
+		printf("\n");*/
 		
 	}
 	/* Broadcast global matrix sizes */
@@ -173,7 +173,7 @@ void init_matmul(char *A_file, char *B_file, char *outfile)
 	//time_t t;
 	//srand((unsigned) time(&t));
 	//sleep((int)(rand()*3));
-	
+	/*
 	sleep(config.world_rank);
 	int j;
 	printf("\n");
@@ -187,6 +187,7 @@ void init_matmul(char *A_file, char *B_file, char *outfile)
 	}
 	printf("-----Tile-----\n");
 	printf("\n");
+	*/
 }
 
 void cleanup_matmul()
@@ -240,7 +241,7 @@ void compute_fox()
 	int source, dest;
 	
 	int tileSize = config.local_size * config.local_size;
-	MPI_Cart_shift(config.col_comm, 0, 1, &source, &dest);
+	//MPI_Cart_shift(config.col_comm, 0, 1, &source, &dest);
 	int rootX = config.col_rank;
 	int i;
 	for (i = 0; i < config.dim[0]; i++) {
